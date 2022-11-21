@@ -1,5 +1,6 @@
 <script setup>
 const props = defineProps(['result']);
+const emits = defineEmits(['append'])
 </script>
 <template>
 <li>
@@ -7,13 +8,13 @@ const props = defineProps(['result']);
   <div class="cell small-9">
     <span class="artist">{{result.artist}}</span>
     <span class="title">{{result.title}}</span><br />
-    <span class="album">{{resultalbum}}</span>
+    <span class="album">{{result.album}}</span>
   </div>
   <div class="cell small-3">
-    <button class="button alert fright">
+    <a class="button alert fright" :href="result.id" v-if="result.source == 'youtube'">
 <font-awesome-icon icon="fa-brands fa-youtube" />
-    </button>
-    <button class="button fright">
+    </a>
+    <button class="button fright" @click="$emit('append')">
       <font-awesome-icon icon="fa-solid fa-plus" />
     </button>
   </div>

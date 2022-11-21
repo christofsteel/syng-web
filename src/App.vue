@@ -1,13 +1,13 @@
 <script setup>
 import { computed, ref, onMounted, onDeactivated } from 'vue'
+import $ from 'jquery'
 import { io } from "socket.io-client"
+import { useRoute, useRouter } from 'vue-router'
 
 import MobileLayout from './components/MobileLayout.vue'
 import DesktopLayout from './components/DesktopLayout.vue'
 
-onMounted(() => {
-  window.addEventListener("resize", resizeBrowserHandler)
-})
+const router=useRouter()
 
 function resizeBrowserHandler (e) {
     is_small.value = (e.target.innerWidth < 768)
@@ -16,13 +16,28 @@ function resizeBrowserHandler (e) {
 const is_small = ref(window.innerWidth < 768)
 const state = ref({
 'search': {'searchTerm': '', 'searchResults': []},
-'queue': [ 
-{'artist': 'Artist A', 'title': 'Songname A', 'album': 'Album A', 'performer': "Performer A"} ,
-{'artist': 'Artist B', 'title': 'Songname B', 'album': 'Album B', 'performer': "Performer B"} ,
-{'artist': 'Artist C', 'title': 'Songname C', 'album': 'Album C', 'performer': "Performer C"} ,
-]
+'queue': [ ],
+'roomCode': undefined,
+'name': undefined
 })
 
+onMounted(() => {
+  window.addEventListener("resize", resizeBrowserHandler)
+  $(document).foundation();
+  $("#welcome").foundation("open")
+  if(useRoute().params.room) {
+    state.value.roomCode = useRoute().params.room
+    closeWelcome()
+  }
+})
+
+function setRoomCode(roomEvent) {
+state.value.roomCode = roomEvent.target.value
+}
+
+function setName(nameEvent) {
+state.value.name = nameEvent.target.value
+}
 
 function updateSearchTerm(val) {
 state.value.search.searchTerm = val
@@ -34,6 +49,23 @@ function search() {
   socket.emit("search", {"query": state.value.search.searchTerm })
 }
 
+function append(entry) {
+  socket.emit("append", {"id": entry.id, "performer": state.value.name, "source": entry.source })
+}
+
+function closeWelcome() {
+  if(state.value.roomCode != undefined) {
+    socket.emit("register-web", {"room": state.value.roomCode}, (response) => {
+    if(response === true) {
+      $('#welcome').foundation("close")
+      router.push({name: "room", params: {room: state.value.roomCode}})
+    } else {
+      console.log("no such room")
+    }
+   }) 
+  }
+}
+
 socket.on("search-results", (results) => {
   state.value.search.searchResults = results
 })
@@ -43,18 +75,46 @@ socket.on("connect", () =>
   )
 
 socket.on("state", (val) => {
-  console.log(val)
+  state.value.queue=val
 })
+</script>
 
+<script>
 </script>
 
 <template>
 <div class="page">
     <div class="row" id="main-content">
       <MobileLayout v-show="is_small" :state="state" @update:searchTerm="updateSearchTerm" />
-      <DesktopLayout v-show="!is_small" :state="state" @update:searchTerm="updateSearchTerm" @search="search"/>
+      <DesktopLayout v-show="!is_small" :state="state" @update:searchTerm="updateSearchTerm" @search="search" @append="append" />
+      <div class="reveal" id="welcome" data-reveal data-close-on-click="false">
+      <h1>Welcome to Syng</h1>
+      <p>
+        Please enter the room code and your name
+      </p>
+      
+        <div class="grid-container">
+          <div class="grid-x grid-padding-x">
+            <div class="medium-6 cell">
+              <label>Room code
+                <input type="text" @input="setRoomCode" placeholder="XXXX">
+              </label>
+            </div>
+            <div class="medium-6 cell">
+              <label>Name
+                <input type="text" @input="setName" placeholder="Leave empty to be asked on append">
+              </label>
+            </div>
+          </div>
+        </div>
+        <button class="button" @click="closeWelcome" >Connect</button>
+      <button class="close-button" data-close aria-label="Close reveal" type="button">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      </div>
     </div>
   </div>
+  <router-view></router-view>
 </template>
 
 <style scoped>

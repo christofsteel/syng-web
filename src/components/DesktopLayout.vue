@@ -3,13 +3,13 @@ import SearchDesktop from './SearchDesktop.vue'
 import QueueDesktop from './QueueDesktop.vue'
 
 const props = defineProps(['state']);
-const emit = defineEmits(['update:searchTerm', 'search'])
+const emit = defineEmits(['update:searchTerm', 'search', 'append'])
 </script>
 
 
 <template>
   <div class="splitter">
-    <SearchDesktop :search="state.search" @update:searchTerm="(val) => $emit('update:searchTerm', val)" @search="$emit('search')" />
+    <SearchDesktop :search="state.search" @update:searchTerm="(val) => $emit('update:searchTerm', val)" @search="$emit('search')" @append="(entry) => $emit('append', entry)" />
     <QueueDesktop :queue="state.queue" />
       <div class="comp-column" id="right-side">
               <div class="header">Recent</div>

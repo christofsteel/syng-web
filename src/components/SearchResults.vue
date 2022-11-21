@@ -1,12 +1,13 @@
 <script setup>
   import Result from './Result.vue'
 const props = defineProps(['searchResults']);
+const emits = defineEmits(['append'])
 </script>
 
 <template>
 <div id="search-results" class="results">
   <ul class="vertical menu">
-    <Result v-for="result in searchResults" :result="result" />
+    <Result v-for="result in searchResults" :result="result" @append="$emit('append', result)" />
   </ul>
 </div>
 </template>
