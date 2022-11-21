@@ -1,10 +1,19 @@
+<script setup>
+const props = defineProps(['searchTerm']);
+const emit = defineEmits(['update:searchTerm', 'search'])
+</script>
+
 <template>
-<form id="simple-search-form" class="form">
     <div class="input-group">
-        <input id="search-query" class="input-group-field" type="search" placeholder="Search term or YouTube link (https://www.youtube.com/watch?v=...)" name="q" />
+        <input id="search-query" class="input-group-field" type="search" placeholder="Search term or YouTube link (https://www.youtube.com/watch?v=...)" :value='searchTerm' @input="$emit('update:searchTerm', $event.target.value)"/>
         <div class="input-group-button">
-            <button class="button" type="submit"><i class="fa fa-search"></i></button>
+            <button class="button" @click="$emit('search')"><font-awesome-icon icon="fa-solid fa-magnifying-glass" /></button>
         </div>
     </div>
-</form>
 </template>
+
+<style scoped>
+.input-group {
+    margin-bottom: 0;
+}
+</style>

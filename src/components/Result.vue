@@ -4,33 +4,35 @@ export default {
 }
 </script>
 <template>
-<div class="row">
-  <div class="columns small-10">
+<div class="grid-x">
+  <div class="cell small-9">
     <span class="artist">{{artist}}</span>
-    <span class="title">{{title}}</span>
+    <span class="title">{{title}}</span><br />
     <span class="album">{{album}}</span>
   </div>
-  <div class="columns small-2">
+  <div class="cell small-3">
     <button class="button alert fright">
-      <i class="fa fa-play"></i>
+<font-awesome-icon icon="fa-brands fa-youtube" />
     </button>
     <button class="button fright">
-      <i class="fa fa-plus"></i>
+      <font-awesome-icon icon="fa-solid fa-plus" />
     </button>
   </div>
 </div>
 
 </template>
-<style scope>
+<style scoped>
 .artist::after{
     content: " - ";
 }
 
-.album::before {
-    content: " [";
+.singer {
+    font-size: smaller;
+    font-style: italic;
 }
-.album::after {
-    content: "]";
+
+.title {
+    font-weight: bold;
 }
 
 </style>

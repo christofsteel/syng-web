@@ -2,6 +2,12 @@
   import Result from './Result.vue'
 </script>
 
+<script>
+export default {
+  props: ['searchResults']
+}
+</script>
+
 <template>
 <div id="search-results" class="results">
   <ul class="vertical menu">
@@ -13,6 +19,10 @@
 </template>
 
 <style scoped>
+#search-results div {
+    vertical-align: middle;
+    height: 100%
+}
 .results {
   flex: 1;
   overflow-y: auto;
