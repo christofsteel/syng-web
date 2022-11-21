@@ -15,7 +15,7 @@ function resizeBrowserHandler (e) {
 
 const is_small = ref(window.innerWidth < 768)
 const state = ref({
-'search': {'searchTerm': ''},
+'search': {'searchTerm': '', 'searchResults': []},
 'queue': [ 
 {'artist': 'Artist A', 'title': 'Songname A', 'album': 'Album A', 'performer': "Performer A"} ,
 {'artist': 'Artist B', 'title': 'Songname B', 'album': 'Album B', 'performer': "Performer B"} ,
@@ -23,15 +23,20 @@ const state = ref({
 ]
 })
 
-function search(val) {
-console.log(state.value.search.searchTerm)
-}
 
 function updateSearchTerm(val) {
 state.value.search.searchTerm = val
 }
 
 const socket = io("ws://localhost:8080")
+
+function search() {
+  socket.emit("search", {"query": state.value.search.searchTerm })
+}
+
+socket.on("search-results", (results) => {
+  state.value.search.searchResults = results
+})
 
 socket.on("connect", () =>
   { socket.emit("register-web", {"room": "ABCD"}) }

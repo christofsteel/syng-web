@@ -11,7 +11,7 @@ const emit = defineEmits(['update:searchTerm', 'search'])
       <div class="header">Search</div>
       <div class="vsplit">
         <SearchBar :searchTerm="search.searchTerm" @update:searchTerm="(val) => $emit('update:searchTerm', val)" @search="$emit('search')" />
-        <SearchResults />
+        <SearchResults :searchResults="search.searchResults" />
       </div>
   </div>
 </template>

@@ -1,14 +1,13 @@
-<script>
-export default {
- props: ['artist', 'title', 'album']
-}
+<script setup>
+const props = defineProps(['result']);
 </script>
 <template>
+<li>
 <div class="grid-x">
   <div class="cell small-9">
-    <span class="artist">{{artist}}</span>
-    <span class="title">{{title}}</span><br />
-    <span class="album">{{album}}</span>
+    <span class="artist">{{result.artist}}</span>
+    <span class="title">{{result.title}}</span><br />
+    <span class="album">{{resultalbum}}</span>
   </div>
   <div class="cell small-3">
     <button class="button alert fright">
@@ -19,7 +18,7 @@ export default {
     </button>
   </div>
 </div>
-
+</li>
 </template>
 <style scoped>
 .artist::after{

@@ -13,10 +13,8 @@
     "@fortawesome/free-solid-svg-icons": "^6.2.1",
     "@fortawesome/vue-fontawesome": "^3.0.2",
     "foundation-sites": "^6.7.5",
-    "socket.io": "^4.5.3",
     "socket.io-client": "^4.5.3",
-    "vue": "^3.2.41",
-    "vue-3-socket.io": "^1.0.5"
+    "vue": "^3.2.41"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^3.1.2",

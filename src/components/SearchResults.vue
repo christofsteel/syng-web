@@ -1,19 +1,12 @@
 <script setup>
   import Result from './Result.vue'
-</script>
-
-<script>
-export default {
-  props: ['searchResults']
-}
+const props = defineProps(['searchResults']);
 </script>
 
 <template>
 <div id="search-results" class="results">
   <ul class="vertical menu">
-    <li> <Result artist="Linkin Park" title="In The End" album="Hybrid Theory"/> </li>
-    <li> <Result artist="ZSK" title="Herz für die Sache" album="Herz für die Sache"/> </li>
-    <li> <Result artist="Die Kassierer" title="Das Schlimmste" album="irgendwas mit Bier"/> </li>
+    <Result v-for="result in searchResults" :result="result" />
   </ul>
 </div>
 </template>
