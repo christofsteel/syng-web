@@ -7,49 +7,55 @@ import MobileLayout from './components/MobileLayout.vue'
 import DesktopLayout from './components/DesktopLayout.vue'
 import WelcomeReveal from './components/WelcomeReveal.vue'
 
-const router=useRouter()
+const router = useRouter()
 
-function resizeBrowserHandler (e) {
-    is_small.value = (e.target.innerWidth < 768)
-}
-
-const is_small = ref(window.innerWidth < 768)
 const state = ref({
-'search': {'searchTerm': '', 'searchResults': []},
-'queue': [ ],
-'room': useRoute().params.room,
-'name': undefined,
-'joined': false
+    'search': {'searchTerm': '', 'searchResults': []},
+    'queue': [ ],
+    'room': useRoute().params.room,
+    'name': undefined,
+    'joined': false,
+    'server': window.location.protocol + "//" + window.location.host + "/",
+    'socket': undefined, 
+    'is_small': window.innerWidth < 768
 })
 
-onMounted(() => {
-  window.addEventListener("resize", resizeBrowserHandler)
-})
+onMounted(() => { window.addEventListener("resize", (e) => { state.value.is_small = (e.target.innerWidth < 768) }) } )
 
-function setRoomCode(room) {
-state.value.room = room
-}
-
-function setName(name) {
-state.value.name = name
-}
-
-function updateSearchTerm(val) {
-state.value.search.searchTerm = val
-}
-
-const socket = io()
+function setRoomCode(room) { state.value.room = room }
+function setName(name) { state.value.name = name }
+function setServer(server) { state.value.server = server }
+function setSearchTerm(searchTerm) { state.value.search.searchTerm = searchTerm }
 
 function search() {
-  socket.emit("search", {"query": state.value.search.searchTerm })
+  state.socket.emit("search", {"query": state.value.search.searchTerm })
 }
 
 function append(entry) {
-  socket.emit("append", {"id": entry.id, "performer": state.value.name, "source": entry.source })
+  state.socket.emit("append", {"id": entry.id, "performer": state.value.name, "source": entry.source })
+}
+
+function connect() {
+  state.socket = io(state.value.server)
+  console.log(state.socket)
+  registerSocketEvents(state.socket)
+}
+
+function registerSocketEvents(socket) {
+    socket.on("search-results", (results) => {
+      state.value.search.searchResults = results
+    })
+
+    socket.on("connect", () => { joinRoom() })
+
+    socket.on("state", (val) => {
+      state.value.queue=val.queue
+      state.value.recent=val.recent
+    })
 }
 
 function joinRoom() {
-  socket.emit("register-web", {"room": state.value.room}, (response) => {
+    state.socket.emit("register-web", {"room": state.value.room}, (response) => {
     if(response === true) {
       state.value.joined = true
       router.push({name: "room", params: {room: state.value.room}})
@@ -58,21 +64,6 @@ function joinRoom() {
     }
   })
 }
-
-socket.on("search-results", (results) => {
-  state.value.search.searchResults = results
-})
-
-socket.on("connect", () =>
-  { 
-  joinRoom()
-  }
-  )
-
-socket.on("state", (val) => {
-  state.value.queue=val.queue
-  state.value.recent=val.recent
-})
 </script>
 
 <script>
@@ -81,9 +72,9 @@ socket.on("state", (val) => {
 <template>
 <div class="page">
     <div class="row" id="main-content">
-      <MobileLayout v-show="is_small" :state="state" @update:searchTerm="updateSearchTerm" />
-      <DesktopLayout v-show="!is_small" :state="state" @update:searchTerm="updateSearchTerm" @search="search" @append="append" />
-      <WelcomeReveal v-if="!state.joined" :room="state.room" @connect="joinRoom" @update:room="setRoomCode" @update:name="setName" />
+      <MobileLayout v-show="state.is_small" :state="state" @update:searchTerm="setSearchTerm" @search="search" @append="append" />
+      <DesktopLayout v-show="!state.is_small" :state="state" @update:searchTerm="setSearchTerm" @search="search" @append="append" />
+      <WelcomeReveal v-if="!state.joined" :room="state.room" :server="state.server" @connect="connect" @update:room="setRoomCode" @update:name="setName" @update:server="setServer" />
     </div>
   </div>
 </template>

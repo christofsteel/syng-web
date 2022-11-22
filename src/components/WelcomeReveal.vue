@@ -2,8 +2,8 @@
 import { onMounted, onBeforeUnmount } from 'vue'
 import $ from 'jquery'
 
-const emits = defineEmits(['connect', 'update:room', 'update:name'])
-const props = defineProps(['room'])
+const emits = defineEmits(['connect', 'update:room', 'update:name', 'update:server'])
+const props = defineProps(['room', 'server'])
 
 onMounted(() => {
   $(document).foundation();
@@ -23,6 +23,11 @@ onBeforeUnmount(() => {
 
   <div class="grid-container">
     <div class="grid-x grid-padding-x">
+      <div class="medium-12 cell">
+        <label>Syng server
+          <input type="text" :value="server" @input="$emit('update:server', $event.target.value)">
+        </label>
+      </div>
       <div class="medium-6 cell">
         <label>Room code
           <input type="text" :value="room" @input="$emit('update:room', $event.target.value)" placeholder="ABCD">
@@ -35,9 +40,6 @@ onBeforeUnmount(() => {
       </div>
     </div>
   </div>
-  <button class="button" @click="$emit('connect')">Connect</button>
-<button class="close-button" data-close aria-label="Close reveal" type="button">
-  <span aria-hidden="true">&times;</span>
-</button>
+  <button class="button expanded" @click="$emit('connect')">Connect</button>
 </div>
 </template>
