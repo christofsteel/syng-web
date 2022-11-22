@@ -11,8 +11,8 @@ export default {
 <template>
   <div class="vsplit">
       <div id="queue-list-wrapper" class="results">
-          <ul id="queue" class="vertical menu">          
-          <Entry v-for="(entry, index) in queue" :artist="entry.artist" :title="entry.title" :album="entry.album" :performer="entry.performer" :current="index == 0" :admin="admin" />
+          <ul id="queue" class="vertical menu">
+          <Entry v-for="(entry, index) in queue" :entry="entry" :current="index == 0" :admin="admin" />
           <li v-if="admin">
               <div class="row">
                   <div class="columns small-12">

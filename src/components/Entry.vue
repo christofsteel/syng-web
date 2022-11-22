@@ -1,6 +1,6 @@
 <script>
 export default {
-  props: ['admin', 'artist', 'title', 'album', 'performer', 'current']
+  props: ['admin', 'entry', 'current']
 }
 </script>
 
@@ -8,9 +8,9 @@ export default {
   <li :class="{ current: current }">
       <div class="grid-x">
           <div class="cell" :class="{'small-9': admin}">
-            <span class="artist">{{ artist }}</span>
-            <span class="title">{{ title }}</span><br />
-            <span class="performer">{{ performer }}</span>
+            <span class="artist">{{ entry.artist }}</span>
+            <span class="title">{{ entry.title }}</span><br />
+            <span class="performer">{{ entry.performer }}</span>
           </div>
           <div v-if="admin" class="cell small-3">
                   <button class="button alert fright" v-if="!current">

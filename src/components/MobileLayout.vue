@@ -5,7 +5,7 @@ import RecentTab from './RecentTab.vue'
 import TabHeader from './TabHeader.vue'
 
 const props = defineProps(['state']);
-const emit = defineEmits(['update:searchTerm'])
+const emit = defineEmits(['update:searchTerm', 'search'])
 
 </script>
 
@@ -18,9 +18,9 @@ const emit = defineEmits(['update:searchTerm'])
             <TabHeader link="#recent-list" icon="fa-history" />
         </div>
         <div class="tabs-container" data-tabs-content="main-tab">
-          <SearchTab :search="state.search" @update:searchTerm="(val) => $emit('update:searchTerm', val)"/>
+          <SearchTab :search="state.search" @update:searchTerm="(val) => $emit('update:searchTerm', val)" @search="$emit('search')"/>
           <QueueTab :queue="state.queue" />
-          <RecentTab />
+          <RecentTab :recent="state.recent" />
         </div>
     </div>
 </div>
