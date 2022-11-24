@@ -14,7 +14,7 @@ body {
 }
 
 .page {
-    height: 100vh;
+    height: 100%;
     position: relative;
 }
 
@@ -32,7 +32,7 @@ body {
 
 .splitter {
     display: flex;
-    height: 100vh;
+    height: 100%;
 }
 
 .comp-column {
@@ -54,7 +54,7 @@ body {
 
 
 #main-content {
-    height: 100vh;
+    height: calc(100vh - 50px);
     max-height: 100vh;
     max-width: 100vw;
 }
@@ -71,13 +71,17 @@ body {
 
 .vsplit {
     display: flex;
-    height: 100%;
+    height: calc(100% - 60px);
     flex-direction: column;
 }
 
 .results {
     flex: 1;
     overflow-y: auto;
+}
+
+#recent {
+    flex-direction: column-reverse;
 }
 
 .performer, .album {
@@ -158,7 +162,7 @@ body {
 }
 
 body {
-    background: url(../syng.png) fixed;
+    background: url(syng.png) fixed;
     background-color: #8a8a8a;
     background-size: auto 50%;
     background-repeat: no-repeat;

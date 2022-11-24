@@ -6,6 +6,6 @@ const props = defineProps(['recent'])
 <template>
   <div class="comp-column" id="right-side">
     <div class="header">Recent</div>
-    <RecentInner :state="recent" />
+    <RecentInner :recent="recent" />
   </div>
 </template>

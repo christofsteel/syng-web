@@ -10,7 +10,7 @@ const emit = defineEmits(['update:searchTerm', 'search', 'append'])
 <div class="tabs-panel is-active" id="simplesearch">
     <div class="vsplit">
       <SearchBar :searchTerm="search.searchTerm" @update:searchTerm="(val) => $emit('update:searchTerm', val)" @search="$emit('search')" @append="(entry) => $emit('append', entry)" />
-      <SearchResults :searchResults="search.searchResults" />
+      <SearchResults :searchResults="search.searchResults" @append="(entry) => $emit('append', entry)" />
     </div>
 </div>
 </template>

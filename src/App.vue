@@ -24,6 +24,7 @@ onMounted(() => { window.addEventListener("resize", (e) => { state.value.is_smal
 
 function setRoomCode(room) { state.value.room = room }
 function setName(name) { state.value.name = name }
+function updateName(evt) { state.value.name = evt.target.textContent }
 function setServer(server) { state.value.server = server }
 function setSearchTerm(searchTerm) { state.value.search.searchTerm = searchTerm }
 
@@ -71,45 +72,36 @@ function joinRoom() {
 
 <template>
 <div class="page">
-    <div class="row" id="main-content">
-      <MobileLayout v-show="state.is_small" :state="state" @update:searchTerm="setSearchTerm" @search="search" @append="append" />
-      <DesktopLayout v-show="!state.is_small" :state="state" @update:searchTerm="setSearchTerm" @search="search" @append="append" />
-      <WelcomeReveal v-if="!state.joined" :room="state.room" :server="state.server" @connect="connect" @update:room="setRoomCode" @update:name="setName" @update:server="setServer" />
-    </div>
+  <div class="row" id="main-content">
+    <MobileLayout v-show="state.is_small" :state="state" @update:searchTerm="setSearchTerm" @search="search" @append="append" />
+    <DesktopLayout v-show="!state.is_small" :state="state" @update:searchTerm="setSearchTerm" @search="search" @append="append" />
+    <WelcomeReveal v-if="!state.joined" :room="state.room" :server="state.server" @connect="connect" @update:room="setRoomCode" @update:name="setName" @update:server="setServer" />
   </div>
+<footer>
+Name: <span class="userName" @focusout="updateName" contenteditable>{{ state.name }}</span>
+</footer>
+</div>
 </template>
 
 <style scoped>
-.page {
-    height: 100vh;
-    position: relative;
-}
-#main-content {
-    height: 100vh;
-    max-height: 100vh;
-    max-width: 100vw;
-}
-</style>
-<style>
-.row {
-    margin:0 !important;
-    max-width: 100% !important;
+footer {
+position: fixed;
+bottom: 0;
+height: 50px;
+line-height: 50px;
+width: 100%;
+padding-left: 10px;
+background-color: #008000;
+font-weight: bold;
+color: #ffffff;
+	   font-size: 1.5rem;
+	   margin: auto;
 }
 
-body {
-    background: url(../syng.png) fixed;
-    background-color: #8a8a8a;
-    background-size: auto 50%;
-    background-repeat: no-repeat;
-    background-position: center;
-    height:100vh;
-}
-.vsplit {
-    display: flex;
-    height: 100%;
-    flex-direction: column;
-}
-#large-current, #current, .button, button:focus {
-    background-color: #008000;
+footer > .userName {
+border: none;
+  border-bottom: 1px dashed #00F000;
+  background-color: #008000;
+
 }
 </style>

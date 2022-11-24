@@ -6,7 +6,7 @@ const props = defineProps(['recent'])
 <template>
   <div class="vsplit">
       <div id="recent-list-wrapper" class="results">
-          <ul id="last10" class="vertical menu">
+          <ul id="recent" class="vertical menu">
             <Entry v-for="entry in recent" :entry="entry" />
           </ul>
       </div>
