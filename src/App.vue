@@ -24,7 +24,14 @@ onMounted(() => { window.addEventListener("resize", (e) => { state.value.is_smal
 
 function setRoomCode(room) { state.value.room = room }
 function setName(name) { state.value.name = name }
-function updateName(evt) { state.value.name = evt.target.textContent }
+function updateName(evt) { 
+  if(evt.target.textContent !== "") { 
+    console.log("Changed name to \"" + evt.target.textContent + "\"");
+    state.value.name = evt.target.textContent 
+  } else {
+    evt.target.textContent = state.value.name;
+  }
+}
 function setServer(server) { state.value.server = server }
 function setSearchTerm(searchTerm) { state.value.search.searchTerm = searchTerm }
 
@@ -37,9 +44,13 @@ function append(entry) {
 }
 
 function connect() {
-  state.socket = io(state.value.server)
-  console.log(state.socket)
-  registerSocketEvents(state.socket)
+  if(state.value.name !== undefined && state.value.name !== "") {
+      state.socket = io(state.value.server)
+      console.log(state.socket)
+      registerSocketEvents(state.socket)
+  } else {
+    console.log("name cannot be " + state.value.name)
+  }
 }
 
 function registerSocketEvents(socket) {
