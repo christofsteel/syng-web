@@ -11,7 +11,7 @@ const emit = defineEmits(['update:searchTerm', 'search', 'append'])
 <template>
   <div class="splitter">
     <SearchDesktop :search="state.search" @update:searchTerm="(val) => $emit('update:searchTerm', val)" @search="$emit('search')" @append="(entry) => $emit('append', entry)" />
-    <QueueDesktop :queue="state.queue" />
-    <RecentDesktop :recent="state.recent" />
+    <QueueDesktop :queue="state.queue" :admin="state.admin" />
+    <RecentDesktop :recent="state.recent" :admin="state.admin" />
   </div>
 </template>

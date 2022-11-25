@@ -19,8 +19,8 @@ const emit = defineEmits(['update:searchTerm', 'search', 'append' ])
         </div>
         <div class="tabs-container" data-tabs-content="main-tab">
           <SearchTab :search="state.search" @update:searchTerm="(val) => $emit('update:searchTerm', val)" @search="$emit('search')" @append="(entry) => $emit('append', entry)"/>
-          <QueueTab :queue="state.queue" />
-          <RecentTab :recent="state.recent" />
+          <QueueTab :queue="state.queue" :admin="state.admin" />
+          <RecentTab :recent="state.recent" :admin="state.admin" />
         </div>
     </div>
 </div>

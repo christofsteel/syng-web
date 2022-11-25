@@ -1,7 +1,7 @@
 <script setup>
 import RecentInner from './RecentInner.vue'
 
-const props = defineProps(['recent'])
+const props = defineProps(['recent', 'admin'])
 </script>
 <template>
   <div class="comp-column" id="right-side">

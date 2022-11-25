@@ -1,11 +1,7 @@
 <script setup>
 import Entry from './Entry.vue'
-</script>
 
-<script>
-export default {
-  props: ['admin', 'queue']
-  }
+const props = defineProps(['queue', 'admin']);
 </script>
 
 <template>
@@ -13,7 +9,7 @@ export default {
       <div id="queue-list-wrapper" class="results">
           <ul id="queue" class="vertical menu">
           <Entry v-for="(entry, index) in queue" :entry="entry" :current="index == 0" :admin="admin" />
-          <li v-if="admin">
+          <li v-show="admin">
               <div class="row">
                   <div class="columns small-12">
                           <a class="button" download="queue.json" rv-href="queue.data">Save</a>

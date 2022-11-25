@@ -2,6 +2,7 @@
 import { computed, ref, onMounted, onDeactivated } from 'vue'
 import { io } from "socket.io-client"
 import { useRoute, useRouter } from 'vue-router'
+import $ from 'jquery'
 
 import MobileLayout from './components/MobileLayout.vue'
 import DesktopLayout from './components/DesktopLayout.vue'
@@ -17,21 +18,20 @@ const state = ref({
     'joined': false,
     'server': window.location.protocol + "//" + window.location.host + "/",
     'socket': undefined, 
-    'is_small': window.innerWidth < 768
+    'is_small': window.innerWidth < 768,
+    'admin': false,
+    'secret': undefined
 })
 
-onMounted(() => { window.addEventListener("resize", (e) => { state.value.is_small = (e.target.innerWidth < 768) }) } )
+onMounted(() => { 
+  window.addEventListener("resize", (e) => { state.value.is_small = (e.target.innerWidth < 768) });
+  $(document).foundation();
+})
 
 function setRoomCode(room) { state.value.room = room }
+function setSecret(secret) { state.value.secret = secret }
 function setName(name) { state.value.name = name }
-function updateName(evt) { 
-  if(evt.target.textContent !== "") { 
-    console.log("Changed name to \"" + evt.target.textContent + "\"");
-    state.value.name = evt.target.textContent 
-  } else {
-    evt.target.textContent = state.value.name;
-  }
-}
+function updateName(evt) { evt.target.textContent = state.value.name;}
 function setServer(server) { state.value.server = server }
 function setSearchTerm(searchTerm) { state.value.search.searchTerm = searchTerm }
 
@@ -39,18 +39,18 @@ function search() {
   state.socket.emit("search", {"query": state.value.search.searchTerm })
 }
 
-function append(entry) {
-  state.socket.emit("append", {"id": entry.id, "performer": state.value.name, "source": entry.source })
+function append(entry) {_append(entry, state.value.name) }
+function _append(entry, name) {
+  if(name == "" || name == undefined) {
+    $("#getusername").foundation("open")
+  } else {
+      state.socket.emit("append", {"id": entry.id, "performer": state.value.name, "source": entry.source })
+  }
 }
 
 function connect() {
-  if(state.value.name !== undefined && state.value.name !== "") {
-      state.socket = io(state.value.server)
-      console.log(state.socket)
-      registerSocketEvents(state.socket)
-  } else {
-    console.log("name cannot be " + state.value.name)
-  }
+  state.socket = io(state.value.server)
+  registerSocketEvents(state.socket)
 }
 
 function registerSocketEvents(socket) {
@@ -64,6 +64,10 @@ function registerSocketEvents(socket) {
       state.value.queue=val.queue
       state.value.recent=val.recent
     })
+
+    socket.on("register-admin", (response) => {
+        state.value.admin = response.success
+    })
 }
 
 function joinRoom() {
@@ -71,6 +75,9 @@ function joinRoom() {
     if(response === true) {
       state.value.joined = true
       router.push({name: "room", params: {room: state.value.room}})
+      if (state.value.secret) {
+          state.socket.emit("register-admin", {"secret": state.value.secret})
+      }
     } else {
       console.log("no such room")
     }
@@ -86,10 +93,13 @@ function joinRoom() {
   <div class="row" id="main-content">
     <MobileLayout v-show="state.is_small" :state="state" @update:searchTerm="setSearchTerm" @search="search" @append="append" />
     <DesktopLayout v-show="!state.is_small" :state="state" @update:searchTerm="setSearchTerm" @search="search" @append="append" />
-    <WelcomeReveal v-if="!state.joined" :room="state.room" :server="state.server" @connect="connect" @update:room="setRoomCode" @update:name="setName" @update:server="setServer" />
+    <WelcomeReveal v-if="!state.joined" :room="state.room" :server="state.server" @connect="connect" @update:room="setRoomCode" @update:name="setName" @update:server="setServer" @update:secret="setSecret" />
+    <div class="reveal" id="getusername" data-reveal data-close-on-click="false" >
+    Test123
+    </div>
   </div>
 <footer>
-Name: <span class="userName" @focusout="updateName" contenteditable>{{ state.name }}</span>
+Name: <span class="userName" @focusout="(evt) => setName(evt.target.textContent)" contenteditable>{{ state.name }}</span>
 </footer>
 </div>
 </template>
@@ -113,6 +123,10 @@ footer > .userName {
 border: none;
   border-bottom: 1px dashed #00F000;
   background-color: #008000;
+  min-width: 5em;
+	   display: inline-block;
+	   height: 70%;
+	   text-align: center;
 
 }
 </style>

@@ -2,7 +2,7 @@
 import { onMounted, onBeforeUnmount } from 'vue'
 import $ from 'jquery'
 
-const emits = defineEmits(['connect', 'update:room', 'update:name', 'update:server'])
+const emits = defineEmits(['connect', 'update:room', 'update:name', 'update:server', 'update:secret'])
 const props = defineProps(['room', 'server'])
 
 onMounted(() => {
@@ -23,9 +23,14 @@ onBeforeUnmount(() => {
 
   <div class="grid-container">
     <div class="grid-x grid-padding-x">
-      <div class="medium-12 cell">
+      <div class="medium-6 cell">
         <label>Syng server
           <input type="text" :value="server" @input="$emit('update:server', $event.target.value)">
+        </label>
+      </div>
+      <div class="medium-6 cell">
+        <label>Admin password
+          <input type="password" @input="$emit('update:secret', $event.target.value)" placeholder="Leave free, if not admin">
         </label>
       </div>
       <div class="medium-6 cell">
@@ -35,7 +40,7 @@ onBeforeUnmount(() => {
       </div>
       <div class="medium-6 cell">
         <label>Name
-          <input type="text" @input="$emit('update:name', $event.target.value)" placeholder="Leave empty to be asked on append">
+          <input type="text" @input="$emit('update:name', $event.target.value)" placeholder="Arno Nym">
         </label>
       </div>
     </div>
