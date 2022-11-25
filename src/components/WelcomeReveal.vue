@@ -15,7 +15,7 @@ onBeforeUnmount(() => {
 })
 </script>
 <template>
-<div class="reveal" id="welcome" data-reveal data-close-on-click="false">
+<div class="reveal" id="welcome" data-reveal data-close-on-esc="false" data-close-on-click="false">
 <h1>Welcome to Syng</h1>
 <p>
   Please enter the room code and your name
