@@ -55,7 +55,7 @@ function connect() {
 
 function registerSocketEvents(socket) {
     socket.on("search-results", (results) => {
-      state.value.search.searchResults = results
+      state.value.search.searchResults = results.results
     })
 
     socket.on("connect", () => { joinRoom() })
