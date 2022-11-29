@@ -14,7 +14,7 @@ const emit = defineEmits(['update:searchTerm', 'search', 'append', 'skip', 'skip
     <div class="comp-column">
         <div data-tabs class="tabs" id="main-tab">
             <TabHeader active="true" link="#simplesearch" icon="fa-magnifying-glass" />
-            <TabHeader link="#queue-list" icon="fa-list" />
+            <TabHeader link="#queue-list" id="queue-tab-title" icon="fa-list" />
             <TabHeader link="#recent-list" icon="fa-history" />
         </div>
         <div class="tabs-container" data-tabs-content="main-tab">

@@ -61,6 +61,7 @@ function _append(entry, name) {
       state.value.current_entry = undefined
       state.value.current_name = undefined
       state.socket.emit("append", {"id": entry.id, "performer": name, "source": entry.source })
+      $("#queue-tab-title").click();
   }
 }
 
