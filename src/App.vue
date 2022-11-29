@@ -7,6 +7,8 @@ import $ from 'jquery'
 import MobileLayout from './components/MobileLayout.vue'
 import DesktopLayout from './components/DesktopLayout.vue'
 import WelcomeReveal from './components/WelcomeReveal.vue'
+import GetUserName from './components/GetUserName.vue'
+import Footer from './components/Footer.vue'
 
 const router = useRouter()
 
@@ -23,6 +25,9 @@ const state = ref({
     'secret': undefined,
     'current_entry': undefined,
     'current_name': undefined,
+    'searching': false,
+    'last_msg': "",
+    'join_msg': undefined
 })
 
 onMounted(() => { 
@@ -39,13 +44,17 @@ function setServer(server) { state.value.server = server }
 function setSearchTerm(searchTerm) { state.value.search.searchTerm = searchTerm }
 
 function search() {
+  state.value.searching = true
   state.socket.emit("search", {"query": state.value.search.searchTerm })
 }
 
-function append(entry) {_append(entry, state.value.name) }
+function append(entry) {
+  _append(entry, state.value.name) 
+  }
 function _append(entry, name) {
   if(name == "" || name == undefined) {
     state.value.current_entry = entry
+    state.value.current_name = ""
     $("#getusername").foundation("open")
   } else {
       $("#getusername").foundation("close")
@@ -55,13 +64,32 @@ function _append(entry, name) {
   }
 }
 
+function close_name() {
+  $("#getusername").foundation("close")
+  state.value.current_entry = undefined
+  state.value.current_name = undefined
+}
+
 function connect() {
   state.socket = io(state.value.server)
   registerSocketEvents(state.socket)
 }
 
+function skipCurrent() {
+    state.socket.emit("skip-current")
+}
+
+function moveUp(uuid) {
+    state.socket.emit("moveUp", {"uuid": uuid})
+}
+
+function skip(uuid) {
+    state.socket.emit("skip", {"uuid": uuid})
+}
+
 function registerSocketEvents(socket) {
     socket.on("search-results", (results) => {
+      state.value.searching = false
       state.value.search.searchResults = results.results
     })
 
@@ -75,6 +103,11 @@ function registerSocketEvents(socket) {
     socket.on("register-admin", (response) => {
         state.value.admin = response.success
     })
+
+    socket.on("msg", (response) => {        
+        state.value.last_msg = response.msg
+        $("#msg").foundation("open")
+    })
 }
 
 function joinRoom() {
@@ -86,59 +119,90 @@ function joinRoom() {
           state.socket.emit("register-admin", {"secret": state.value.secret})
       }
     } else {
-      console.log("no such room")
+      state.value.join_msg = "<strong>No such room!</strong> <br/>" + 
+                "Please use the correct room code your organizer provided you.<br/>" + 
+                "To host your own syng powered karaoke parties, please download and " + 
+                "install <a href='https://git.k-fortytwo.de/christofsteel/syng2.git' " +
+                "target='_blank'>Syng</a> and run it with <pre>syng-client " + 
+                state.value.server + "</pre>"
     }
   })
 }
 </script>
 
-<script>
-</script>
-
 <template>
 <div class="page">
   <div class="row" id="main-content">
-    <MobileLayout v-show="state.is_small" :state="state" @update:searchTerm="setSearchTerm" @search="search" @append="append" />
-    <DesktopLayout v-show="!state.is_small" :state="state" @update:searchTerm="setSearchTerm" @search="search" @append="append" />
-    <WelcomeReveal v-if="!state.joined" :room="state.room" :server="state.server" @connect="connect" @update:room="setRoomCode" @update:name="setName" @update:server="setServer" @update:secret="setSecret" />
-    <div class="reveal" id="getusername" data-reveal data-close-on-esc="false" data-close-on-click="false" >
-     <h1>Please enter your name</h1>
-    <label>Name
-      <input type="text" @input="(evt) => setCurrentName(evt.target.value)" placeholder="Arno Nym">
-    </label>
-    <button class="button" @click="() => _append(state.current_entry, state.current_name)">Ok</button>
-    <button class="button" @click="append">Abort</button>
+    <MobileLayout 
+        v-show="state.is_small" 
+        :state="state" 
+        @update:searchTerm="setSearchTerm" 
+        @search="search" 
+        @append="append" 
+        @skip="skip"
+        @skipCurrent="skipCurrent"
+        @moveUp="moveUp"
+        />
+    <DesktopLayout 
+        v-show="!state.is_small" 
+        :state="state" 
+        @update:searchTerm="setSearchTerm" 
+        @search="search" 
+        @append="append"
+        @skip="skip"
+        @skipCurrent="skipCurrent"
+        @moveUp="moveUp"
+        />
+    <WelcomeReveal
+      v-if="!state.joined"
+      :room="state.room"
+      :server="state.server"
+      :joinMsg="state.join_msg"
+      @connect="connect"
+      @update:room="setRoomCode"
+      @update:name="setName"
+      @update:server="setServer"
+      @update:secret="setSecret" 
+      />
+    <GetUserName
+      :current_name="state.current_name"
+      :current_entry="state.current_entry"
+      @update:currentName="setCurrentName"
+      @append="_append(state.current_entry, state.current_name)"
+      @close_name="close_name"
+      />
+    <div class="reveal" id="msg" data-reveal>
+      {{ state.last_msg }}
+      <button class="close-button" data-close aria-label="Close modal" type="button">
+        <span aria-hidden="true">&times;</span>
+      </button>
     </div>
   </div>
-<footer>
-Name: <span class="userName" @focusout="(evt) => setName(evt.target.textContent)" contenteditable>{{ state.name }}</span>
-</footer>
+  <Footer
+    :name="state.name"
+    @update:name="setName"
+    />
 </div>
 </template>
 
 <style scoped>
-footer {
-position: fixed;
-bottom: 0;
-height: 50px;
-line-height: 50px;
-width: 100%;
-padding-left: 10px;
-background-color: #008000;
-font-weight: bold;
-color: #ffffff;
-	   font-size: 1.5rem;
-	   margin: auto;
+.page {
+    height:100vh;
+    background: url('assets/syng.png') fixed;
+    background-color: #8a8a8a;
+    background-size: auto 50%;
+    background-repeat: no-repeat;
+    background-position: center;
 }
 
-footer > .userName {
-border: none;
-  border-bottom: 1px dashed #00F000;
-  background-color: #008000;
-  min-width: 5em;
-	   display: inline-block;
-	   height: 70%;
-	   text-align: center;
+.page {
+    height: 100%;
+    position: relative;
+}
 
+#main-content {
+    height: calc(100vh - 50px);
+    max-height: 100vh;
+    max-width: 100vw;
 }
 </style>

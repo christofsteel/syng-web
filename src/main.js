@@ -6,7 +6,7 @@ import App from './App.vue'
 import Main from './Main.vue'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faMagnifyingGlass, faList, faHistory, faPlus, faStepForward, faTimes } from '@fortawesome/free-solid-svg-icons'
+import { faMagnifyingGlass, faList, faArrowUp, faHistory, faPlus, faStepForward, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { faYoutube } from '@fortawesome/free-brands-svg-icons'
 
 import 'foundation-sites/dist/css/foundation.min.css'
@@ -18,6 +18,7 @@ library.add(faHistory)
 library.add(faStepForward)
 library.add(faYoutube)
 library.add(faTimes)
+library.add(faArrowUp)
 
 window.jQuery = jquery;
 window.$ = jquery;

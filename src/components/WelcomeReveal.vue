@@ -3,7 +3,7 @@ import { onMounted, onBeforeUnmount } from 'vue'
 import $ from 'jquery'
 
 const emits = defineEmits(['connect', 'update:room', 'update:name', 'update:server', 'update:secret'])
-const props = defineProps(['room', 'server'])
+const props = defineProps(['room', 'server', 'joinMsg'])
 
 onMounted(() => {
   $(document).foundation();
@@ -15,7 +15,7 @@ onBeforeUnmount(() => {
 })
 </script>
 <template>
-<div class="reveal" id="welcome" data-reveal data-close-on-esc="false" data-close-on-click="false">
+<div class="reveal" id="welcome" @keyup.enter="$emit('connect')" data-reveal data-close-on-esc="false" data-close-on-click="false">
 <h1>Welcome to Syng</h1>
 <p>
   Please enter the room code and your name
@@ -45,6 +45,8 @@ onBeforeUnmount(() => {
       </div>
     </div>
   </div>
+  <p v-html="joinMsg">
+  </p>
   <button class="button expanded" @click="$emit('connect')">Connect</button>
 </div>
 </template>

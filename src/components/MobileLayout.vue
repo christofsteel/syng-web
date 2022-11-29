@@ -5,7 +5,7 @@ import RecentTab from './RecentTab.vue'
 import TabHeader from './TabHeader.vue'
 
 const props = defineProps(['state']);
-const emit = defineEmits(['update:searchTerm', 'search', 'append' ])
+const emit = defineEmits(['update:searchTerm', 'search', 'append', 'skip', 'skipCurrent', 'moveUp'])
 
 </script>
 
@@ -18,8 +18,14 @@ const emit = defineEmits(['update:searchTerm', 'search', 'append' ])
             <TabHeader link="#recent-list" icon="fa-history" />
         </div>
         <div class="tabs-container" data-tabs-content="main-tab">
-          <SearchTab :search="state.search" @update:searchTerm="(val) => $emit('update:searchTerm', val)" @search="$emit('search')" @append="(entry) => $emit('append', entry)"/>
-          <QueueTab :queue="state.queue" :admin="state.admin" />
+          <SearchTab :search="state.search" :searching="state.searching" @update:searchTerm="(val) => $emit('update:searchTerm', val)" @search="$emit('search')" @append="(entry) => $emit('append', entry)"/>
+          <QueueTab
+            :queue="state.queue"
+            :admin="state.admin"
+            @skip="(uuid) => $emit('skip', uuid)"
+            @moveUp="(uuid) => $emit('moveUp', uuid)"
+            @skipCurrent="$emit('skipCurrent')"
+            /> 
           <RecentTab :recent="state.recent" :admin="state.admin" />
         </div>
     </div>
@@ -31,12 +37,7 @@ const emit = defineEmits(['update:searchTerm', 'search', 'append' ])
     display: flex;
     height: 100vh;
 }
-.comp-column {
-    max-height: 100vh;
-    flex:1;
-    display: flex;
-    flex-direction: column;
-}
+
 .tabs-container {
     flex: 1;
     position: relative;

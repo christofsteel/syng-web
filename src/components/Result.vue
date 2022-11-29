@@ -11,7 +11,7 @@ const emits = defineEmits(['append'])
     <span class="album">{{result.album}}</span>
   </div>
   <div class="cell small-3">
-    <a class="button alert fright" :href="result.id" v-if="result.source == 'youtube'">
+    <a class="button alert fright" target="_blank" rel="noreferrer noopener" :href="result.id" v-if="result.source == 'youtube'">
 <font-awesome-icon icon="fa-brands fa-youtube" />
     </a>
     <button class="button fright" @click="$emit('append')">
