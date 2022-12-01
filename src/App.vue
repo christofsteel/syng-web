@@ -86,7 +86,7 @@ function skipCurrent() {
 }
 
 function moveUp(uuid) {
-    state.socket.emit("moveUp", {"uuid": uuid})
+    state.socket.emit("move-up", {"uuid": uuid})
 }
 
 function skip(uuid) {
