@@ -65,7 +65,7 @@ function _append(entry, name) {
       $("#getusername").foundation("close")
       state.value.current_entry = undefined
       state.value.current_name = undefined
-      state.socket.emit("append", {"id": entry.id, "performer": name, "source": entry.source })
+      state.socket.emit("append", {"ident": entry.ident, "performer": name, "source": entry.source })
       $("#queue-tab-title").click();
   }
 }
@@ -106,10 +106,6 @@ function registerSocketEvents(socket) {
       state.value.recent=val.recent
     })
 
-    socket.on("register-admin", (response) => {
-        state.value.admin = response.success
-    })
-
     socket.on("msg", (response) => {        
         state.value.last_msg = response.msg
         $("#msg").foundation("open")
@@ -122,7 +118,9 @@ function joinRoom() {
       state.value.joined = true
       router.push({name: "room", params: {room: state.value.room}})
       if (state.value.secret) {
-          state.socket.emit("register-admin", {"secret": state.value.secret})
+          state.socket.emit("register-admin", {"secret": state.value.secret}, (response) => {
+            state.value.admin = response
+          })
       }
     } else {
       state.value.join_msg = "<strong>No such room!</strong> <br/>" + 
