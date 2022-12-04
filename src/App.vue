@@ -33,11 +33,29 @@ const state = ref({
 onMounted(() => { 
   window.addEventListener("resize", (e) => { state.value.is_small = (e.target.innerWidth < 768) });
   $(document).foundation();
+  if(localStorage.name){ state.value.name = localStorage.name }
+  if(localStorage.server){ state.value.server = localStorage.server }
+  if(!(state.value.room)) {
+      if(localStorage.room){ state.value.room = localStorage.room }
+  }
+  if(localStorage.secret){ state.value.secret = localStorage.secret }
+  if(state.value.server && state.value.room) {
+    connect()
+  }
 })
 
-function setRoomCode(room) { state.value.room = room }
-function setSecret(secret) { state.value.secret = secret }
-function setName(name) { state.value.name = name }
+function emptyLocalStorageAndLogout() {
+    localStorage.removeItem('server')
+    localStorage.removeItem('secret')
+    localStorage.removeItem('name')
+    localStorage.removeItem('room')
+    state.socket.disconnect()
+    state.value.joined = false
+}
+
+function setRoomCode(room) { state.value.room = room; }
+function setSecret(secret) { state.value.secret = secret; }
+function setName(name) { state.value.name = name; localStorage.name=name }
 function setCurrentName(name) { state.value.current_name = name }
 function updateName(evt) { evt.target.textContent = state.value.name;}
 function setServer(server) { state.value.server = server }
@@ -77,7 +95,6 @@ function close_name() {
 }
 
 function connect() {
-  state.socket = io(state.value.server)
   registerSocketEvents(state.socket)
 }
 
@@ -93,34 +110,36 @@ function skip(uuid) {
     state.socket.emit("skip", {"uuid": uuid})
 }
 
-function registerSocketEvents(socket) {
-    socket.on("search-results", (results) => {
+function registerSocketEvents() {
+    state.socket = io(state.value.server)
+    state.socket.on("search-results", (results) => {
       state.value.searching = false
       state.value.search.searchResults = results.results
     })
 
-    socket.on("connect", () => { joinRoom() })
+    state.socket.on("connect", () => { joinRoom() })
 
-    socket.io.on("reconnect", () => { joinRoom() })
+    state.socket.io.on("reconnect", () => { joinRoom() })
 
-    socket.on("disconnect", () => {
-        connect();
-    });
-
-    socket.on("state", (val) => {
+    state.socket.on("state", (val) => {
       state.value.queue=val.queue
       state.value.recent=val.recent
     })
 
-    socket.on("msg", (response) => {        
+    state.socket.on("msg", (response) => {        
         state.value.last_msg = response.msg
         $("#msg").foundation("open")
     })
 }
 
 function joinRoom() {
+    console.log("Joining room " + state.value.room)
     state.socket.emit("register-web", {"room": state.value.room}, (response) => {
     if(response === true) {
+      localStorage.name = state.value.name
+      localStorage.server = state.value.server
+      localStorage.room = state.value.room
+      localStorage.secret = state.value.secret
       state.value.joined = true
       router.push({name: "room", params: {room: state.value.room}})
       if (state.value.secret) {
@@ -135,7 +154,10 @@ function joinRoom() {
                 "install <a href='https://git.k-fortytwo.de/christofsteel/syng2.git' " +
                 "target='_blank'>Syng</a> and run it with <pre>syng-client " + 
                 state.value.server + "</pre>"
-      state.socket.disconnect()
+        if(state.value.joined) {
+            state.socket.disconnect()
+            setTimeout(() => connect(), 2000)
+        }
     }
   })
 }
@@ -169,6 +191,8 @@ function joinRoom() {
       :room="state.room"
       :server="state.server"
       :joinMsg="state.join_msg"
+      :name="state.name"
+      :secret="state.secret"
       @connect="connect"
       @update:room="setRoomCode"
       @update:name="setName"
@@ -192,6 +216,7 @@ function joinRoom() {
   <Footer
     :name="state.name"
     @update:name="setName"
+    @logout="emptyLocalStorageAndLogout"
     />
 </div>
 </template>

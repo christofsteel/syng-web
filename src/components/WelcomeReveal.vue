@@ -3,7 +3,7 @@ import { onMounted, onBeforeUnmount } from 'vue'
 import $ from 'jquery'
 
 const emits = defineEmits(['connect', 'update:room', 'update:name', 'update:server', 'update:secret'])
-const props = defineProps(['room', 'server', 'joinMsg'])
+const props = defineProps(['room', 'server', 'secret', 'name', 'joinMsg'])
 
 onMounted(() => {
   $(document).foundation();
@@ -30,7 +30,7 @@ onBeforeUnmount(() => {
       </div>
       <div class="medium-6 cell">
         <label>Admin password
-          <input type="password" @input="$emit('update:secret', $event.target.value)" placeholder="Leave free, if not admin">
+          <input type="password" @input="$emit('update:secret', $event.target.value)" :value="secret" placeholder="Leave free, if not admin">
         </label>
       </div>
       <div class="medium-6 cell">
@@ -40,7 +40,7 @@ onBeforeUnmount(() => {
       </div>
       <div class="medium-6 cell">
         <label>Name
-          <input type="text" @input="$emit('update:name', $event.target.value)" placeholder="Arno Nym">
+          <input type="text" @input="$emit('update:name', $event.target.value)" :value="name" placeholder="Arno Nym">
         </label>
       </div>
     </div>

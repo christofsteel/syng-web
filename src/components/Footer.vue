@@ -1,6 +1,6 @@
 <script setup>
 const props = defineProps(['name'])
-const emits = defineEmits(['update:name'])
+const emits = defineEmits(['update:name', 'logout'])
 </script>
 <template>
   <footer>
@@ -12,6 +12,7 @@ const emits = defineEmits(['update:name'])
       >
       {{ name }}
     </span>
+    <div class="button alert fright" @click="$emit('logout')">Log out</div>
   </footer>
 </template>
 <style scoped>
@@ -27,6 +28,11 @@ footer {
   color: #ffffff;
   font-size: 1.5rem;
   margin: auto;
+}
+
+footer > .button {
+margin-top: 5px;
+margin-right: 5px;
 }
 
 footer > .userName {
