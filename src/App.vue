@@ -101,6 +101,12 @@ function registerSocketEvents(socket) {
 
     socket.on("connect", () => { joinRoom() })
 
+    socket.io.on("reconnect", () => { joinRoom() })
+
+    socket.on("disconnect", () => {
+        connect();
+    });
+
     socket.on("state", (val) => {
       state.value.queue=val.queue
       state.value.recent=val.recent
@@ -129,6 +135,7 @@ function joinRoom() {
                 "install <a href='https://git.k-fortytwo.de/christofsteel/syng2.git' " +
                 "target='_blank'>Syng</a> and run it with <pre>syng-client " + 
                 state.value.server + "</pre>"
+      state.socket.disconnect()
     }
   })
 }
