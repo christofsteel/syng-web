@@ -64,7 +64,7 @@ function setSearchTerm(searchTerm) { state.value.search.searchTerm = searchTerm 
 function search() {
   var yt_checker = /^(?:https?:\/\/)?(?:www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/;
   if (state.value.search.searchTerm.match(yt_checker)) {
-    append({"id": state.value.search.searchTerm, "source": "youtube"})
+    append({"ident": state.value.search.searchTerm, "source": "youtube"})
   } else {
     state.value.searching = true
     state.socket.emit("search", {"query": state.value.search.searchTerm })
