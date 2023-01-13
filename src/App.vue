@@ -33,13 +33,13 @@ const state = ref({
 onMounted(() => { 
   window.addEventListener("resize", (e) => { state.value.is_small = (e.target.innerWidth < 768) });
   $(document).foundation();
-  if(localStorage.name){ state.value.name = localStorage.name }
+  if(localStorage.name && localStorage.name != "undefined"){ state.value.name = localStorage.name }
   if(localStorage.server){ state.value.server = localStorage.server }
   if(!(state.value.room)) {
       if(localStorage.room){ state.value.room = localStorage.room }
   }
   if(localStorage.secret){ state.value.secret = localStorage.secret }
-  if(state.value.server && state.value.room) {
+  if(state.value.server && state.value.room && state.value.name) {
     connect()
   }
 })
