@@ -24,16 +24,6 @@ onBeforeUnmount(() => {
   <div class="grid-container">
     <div class="grid-x grid-padding-x">
       <div class="medium-6 cell">
-        <label>Syng server
-          <input type="text" :value="server" @input="$emit('update:server', $event.target.value)">
-        </label>
-      </div>
-      <div class="medium-6 cell">
-        <label>Admin password
-          <input type="password" @input="$emit('update:secret', $event.target.value)" :value="secret" placeholder="Leave free, if not admin">
-        </label>
-      </div>
-      <div class="medium-6 cell">
         <label>Room code
           <input type="text" :value="room" @input="$emit('update:room', $event.target.value)" placeholder="ABCD">
         </label>
@@ -48,5 +38,26 @@ onBeforeUnmount(() => {
   <p v-html="joinMsg">
   </p>
   <button class="button expanded" @click="$emit('connect')">Connect</button>
+  <ul class="accordion" data-accordion>
+    <li class="accordion-item" data-accordion-item>
+      <a href="#" class="accordion-title">Advanced</a>
+      <div class="accordion-content" data-tab-content>
+        <div class="grid-container">
+          <div class="grid-x grid-padding-x">
+            <div class="medium-6 cell">
+              <label>Syng server
+                <input type="text" :value="server" @input="$emit('update:server', $event.target.value)">
+              </label>
+            </div>
+            <div class="medium-6 cell">
+              <label>Admin password
+                <input type="password" @input="$emit('update:secret', $event.target.value)" :value="secret" placeholder="Leave free, if not admin">
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </li>
+  </ul>
 </div>
 </template>
