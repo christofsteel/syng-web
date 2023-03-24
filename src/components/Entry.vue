@@ -32,7 +32,7 @@ const eta = computed(() =>{
           <div class="cell" :class="{'small-9': admin}">
             <span class="artist">{{ entry.artist }}</span>
             <span class="title">{{ entry.title }}</span><br />
-            <span class="performer">{{ entry.performer }}</span>
+            <span class="performer">{{ entry.performer }} [{{ entry.uid }}]</span>
             <span v-if="!current" class="eta">{{ eta }}</span>
           </div>
           <div v-if="admin" class="cell small-3">

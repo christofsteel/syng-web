@@ -27,7 +27,8 @@ const state = ref({
     'current_name': undefined,
     'searching': false,
     'last_msg': "",
-    'join_msg': undefined
+    'join_msg': undefined,
+    'uid': undefined
 })
 
 onMounted(() => { 
@@ -39,6 +40,7 @@ onMounted(() => {
       if(localStorage.room){ state.value.room = localStorage.room }
   }
   if(localStorage.secret){ state.value.secret = localStorage.secret }
+  if(localStorage.uid){ state.value.uid = localStorage.uid }
   if(state.value.server && state.value.room && state.value.name) {
     connect()
   }
@@ -49,6 +51,7 @@ function emptyLocalStorageAndLogout() {
     localStorage.removeItem('secret')
     localStorage.removeItem('name')
     localStorage.removeItem('room')
+    localStorage.removeItem('uid')
     state.socket.disconnect()
     state.value.joined = false
 }
@@ -83,7 +86,7 @@ function _append(entry, name) {
       $("#getusername").foundation("close")
       state.value.current_entry = undefined
       state.value.current_name = undefined
-      state.socket.emit("append", {"ident": entry.ident, "performer": name, "source": entry.source })
+      state.socket.emit("append", {"ident": entry.ident, "performer": name, "source": entry.source, "uid": state.value.uid })
       $("#queue-tab-title").click();
   }
 }
@@ -95,6 +98,9 @@ function close_name() {
 }
 
 function connect() {
+  if(!state.value.uid || state.value.uid == "undefined") {
+    state.value.uid = crypto.randomUUID()
+  }
   registerSocketEvents(state.socket)
 }
 
@@ -140,6 +146,7 @@ function joinRoom() {
       localStorage.server = state.value.server
       localStorage.room = state.value.room
       localStorage.secret = state.value.secret
+      localStorage.uid = state.value.uid
       state.value.joined = true
       router.push({name: "room", params: {room: state.value.room}})
       if (state.value.secret) {
