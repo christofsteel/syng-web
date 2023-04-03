@@ -9,32 +9,34 @@ import DesktopLayout from './components/DesktopLayout.vue'
 import WelcomeReveal from './components/WelcomeReveal.vue'
 import GetUserName from './components/GetUserName.vue'
 import Footer from './components/Footer.vue'
+import AlreadyQueued from './components/AlreadyQueued.vue'
 
 const router = useRouter()
 
 const state = ref({
     'search': {'searchTerm': '', 'searchResults': []},
     'queue': [ ],
+    'waiting_room': [ ],
     'room': useRoute().params.room,
-    'name': undefined,
+    'name': null,
     'joined': false,
     'server': window.location.protocol + "//" + window.location.host + "/",
-    'socket': undefined, 
+    'socket': null, 
     'is_small': window.innerWidth < 768,
     'admin': false,
-    'secret': undefined,
-    'current_entry': undefined,
-    'current_name': undefined,
+    'secret': null,
+    'current_entry': null,
+    'current_name': null,
     'searching': false,
     'last_msg': "",
-    'join_msg': undefined,
-    'uid': undefined
+    'join_msg': null,
+    'uid': null
 })
 
 onMounted(() => { 
   window.addEventListener("resize", (e) => { state.value.is_small = (e.target.innerWidth < 768) });
   $(document).foundation();
-  if(localStorage.name && localStorage.name != "undefined"){ state.value.name = localStorage.name }
+  if(localStorage.name && localStorage.name != "null"){ state.value.name = localStorage.name }
   if(localStorage.server){ state.value.server = localStorage.server }
   if(!(state.value.room)) {
       if(localStorage.room){ state.value.room = localStorage.room }
@@ -75,31 +77,75 @@ function search() {
 }
 
 function append(entry) {
-  _append(entry, state.value.name) 
-  }
-function _append(entry, name) {
-  if(name == "" || name == undefined) {
-    state.value.current_entry = entry
-    state.value.current_name = ""
-    $("#getusername").foundation("open")
-  } else {
-      $("#getusername").foundation("close")
-      state.value.current_entry = undefined
-      state.value.current_name = undefined
-      state.socket.emit("append", {"ident": entry.ident, "performer": name, "source": entry.source, "uid": state.value.uid })
-      $("#queue-tab-title").click();
-  }
+    checked_append_with_name(entry, state.value.name) 
+}
+function checked_append_with_name(entry, name) {
+    console.log("checked_append_with_name")
+    console.log(entry)
+    console.log(name)
+    if(name == "" || name == null) {
+        state.value.current_entry = entry;
+        state.value.current_name = "";
+        $("#getusername").foundation("open");
+    } else {
+        $("#getusername").foundation("close");
+
+        var in_queue = false;
+        for (const entry of state.value.queue) {
+            if(entry.uid == state.value.uid) { 
+                in_queue = true;
+            }
+        }
+
+        if(in_queue) {
+            $("#alreadyqueued").foundation("open");
+        } else {
+            raw_append(entry.ident, name, entry.source, state.value.uid);
+        }
+    }
+}
+
+function raw_append(ident, name, source, uid) {
+    $("#getusername").foundation("close");
+    $("#alreadyqueued").foundation("close");
+
+    state.value.current_name = null;
+    state.value.current_entry = null;
+    state.socket.emit("append", {"ident": ident, "performer": name, "source": source, "uid": uid });
+    $("#queue-tab-title").click();
+}
+
+function wait_append(ident, name, source, uid) {
+    $("#getusername").foundation("close");
+    $("#alreadyqueued").foundation("close");
+
+    state.value.current_name = null;
+    state.value.current_entry = null;
+    console.log(name)
+    state.socket.emit("waiting-room-append", {"ident": ident, "performer": name, "source": source, "uid": uid });
+    $("#queue-tab-title").click();
 }
 
 function close_name() {
   $("#getusername").foundation("close")
-  state.value.current_entry = undefined
-  state.value.current_name = undefined
+  state.value.current_entry = null
+  state.value.current_name = null
+}
+
+function close_already_queued() {
+    $("#alreadyqueued").foundation("close");
+    state.value.current_entry = null;
+    state.value.current_name = null;
 }
 
 function connect() {
-  if(!state.value.uid || state.value.uid == "undefined") {
-    state.value.uid = crypto.randomUUID()
+  if(!state.value.uid || state.value.uid == "null") {
+    if(isSecureContext) {
+    state.value.uid = crypto.randomUUID();
+    } else {
+        console.log("Insecure connection detected, user ids may not be unique");
+        state.value.uid = Math.random();
+    }
   }
   registerSocketEvents(state.socket)
 }
@@ -130,6 +176,7 @@ function registerSocketEvents() {
     state.socket.on("state", (val) => {
       state.value.queue=val.queue
       state.value.recent=val.recent
+      state.value.waiting_room = val.waiting_room
     })
 
     state.socket.on("msg", (response) => {        
@@ -210,8 +257,13 @@ function joinRoom() {
       :current_name="state.current_name"
       :current_entry="state.current_entry"
       @update:currentName="setCurrentName"
-      @append="_append(state.current_entry, state.current_name)"
+      @append="checked_append_with_name(state.current_entry, state.current_name)"
       @close_name="close_name"
+      />
+    <AlreadyQueued
+      @append="raw_append(state.current_entry.ident, state.name ? state.name : state.current_name, state.current_entry.source, state.uid)"
+      @wait="wait_append(state.current_entry.ident, state.name ? state.name : state.current_name, state.current_entry.source, state.uid)"
+      @cancel="close_already_queued"
       />
     <div class="reveal" id="msg" data-reveal>
       {{ state.last_msg }}

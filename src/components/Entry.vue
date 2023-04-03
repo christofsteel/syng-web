@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue'
-const props = defineProps(['admin', 'entry', 'current', 'firstStartedAt', 'offset', 'currentTime'])
+const props = defineProps(['admin', 'entry', 'current', 'firstStartedAt', 'offset', 'currentTime', 'additionalClass'])
 const emits = defineEmits(['skip', 'skipCurrent', 'moveUp'])
 
 function skip() {
@@ -18,7 +18,7 @@ const eta = computed(() =>{
   let etaSeconds = Math.round(props.offset - playBackSeconds)
   
   if (isNaN(etaSeconds)) {
-    return "error"
+    return null
     } else {
   return new Date(etaSeconds * 1000).toISOString().substring(11,19)
   }
@@ -27,13 +27,13 @@ const eta = computed(() =>{
 </script>
 
 <template>
-  <li :class="{ current: current }">
+  <li :class="[{ current: current }, additionalClass]">
       <div class="grid-x">
           <div class="cell" :class="{'small-9': admin}">
             <span class="artist">{{ entry.artist }}</span>
             <span class="title">{{ entry.title }}</span><br />
             <span class="performer">{{ entry.performer }} [{{ entry.uid }}]</span>
-            <span v-if="!current" class="eta">{{ eta }}</span>
+            <span v-if="!current && eta" class="eta">{{ eta }}</span>
           </div>
           <div v-if="admin" class="cell small-3">
                   <button class="button alert fright" @click="skip">
