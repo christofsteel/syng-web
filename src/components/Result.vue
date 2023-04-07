@@ -14,6 +14,9 @@ const emits = defineEmits(['append'])
     <a class="button alert fright" target="_blank" rel="noreferrer noopener" :href="result.ident" v-if="result.source == 'youtube'">
 <font-awesome-icon icon="fa-brands fa-youtube" />
     </a>
+    <!-- <button class="button fright" @click="$emit('append')"> -->
+    <!--   <font-awesome-icon icon="fa-solid fa-chair" /> -->
+    <!-- </button> -->
     <button class="button fright" @click="$emit('append')">
       <font-awesome-icon icon="fa-solid fa-plus" />
     </button>

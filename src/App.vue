@@ -80,9 +80,6 @@ function append(entry) {
     checked_append_with_name(entry, state.value.name) 
 }
 function checked_append_with_name(entry, name) {
-    console.log("checked_append_with_name")
-    console.log(entry)
-    console.log(name)
     if(name == "" || name == null) {
         state.value.current_entry = entry;
         state.value.current_name = "";
@@ -97,7 +94,8 @@ function checked_append_with_name(entry, name) {
             }
         }
 
-        if(in_queue) {
+        if(in_queue && !state.value.admin) {
+            state.value.current_entry = entry;
             $("#alreadyqueued").foundation("open");
         } else {
             raw_append(entry.ident, name, entry.source, state.value.uid);
@@ -121,7 +119,6 @@ function wait_append(ident, name, source, uid) {
 
     state.value.current_name = null;
     state.value.current_entry = null;
-    console.log(name)
     state.socket.emit("waiting-room-append", {"ident": ident, "performer": name, "source": source, "uid": uid });
     $("#queue-tab-title").click();
 }

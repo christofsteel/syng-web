@@ -42,13 +42,13 @@ function offset(index) {
             @moveUp="(uuid) => $emit('moveUp', uuid)" 
           />
           </ul>
+          <div class="header">Waiting room</div>
           <ul id="waiting_room" class="vertical menu">
-          <li class="heading">Waiting room</li>
           <Entry 
             v-for="(entry, index) in waiting_room" 
             :entry="entry" 
             :admin="admin"
-            class="waitingRoom"
+            :waitingRoom="true"
             @skip="(uuid) => $emit('skip', uuid)" 
             @skipCurrent="$emit('skipCurrent')"
             @moveUp="(uuid) => $emit('moveUp', uuid)" 
@@ -59,20 +59,15 @@ function offset(index) {
 </template>
 <style scoped>
 
-#waiting_room {
-    background: repeating-linear-gradient(
-  45deg,
-  #000000,
-  #000000 10px,
-  #004000 10px,
-  #004000 20px
-);
-  }
 #waiting_room li{
     opacity: 0.5;
   }
 #waiting_room .heading {
   background: #00ff00;
   font-weight: bold;
+}
+
+.menu {
+  margin-bottom: .5rem;
 }
 </style>

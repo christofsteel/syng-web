@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue'
-const props = defineProps(['admin', 'entry', 'current', 'firstStartedAt', 'offset', 'currentTime', 'additionalClass'])
+const props = defineProps(['admin', 'entry', 'current', 'firstStartedAt', 'offset', 'currentTime', 'waitingRoom'])
 const emits = defineEmits(['skip', 'skipCurrent', 'moveUp'])
 
 function skip() {
@@ -27,13 +27,13 @@ const eta = computed(() =>{
 </script>
 
 <template>
-  <li :class="[{ current: current }, additionalClass]">
+  <li :class="[{ current: current }, {waitingRoom: waitingRoom}]">
       <div class="grid-x">
           <div class="cell" :class="{'small-9': admin}">
             <span class="artist">{{ entry.artist }}</span>
             <span class="title">{{ entry.title }}</span><br />
-            <span class="performer">{{ entry.performer }} [{{ entry.uid }}]</span>
-            <span v-if="!current && eta" class="eta">{{ eta }}</span>
+            <span class="performer">{{ entry.performer }}</span>
+            <span v-if="!current && !waitingRoom" class="eta">{{ eta }}</span>
           </div>
           <div v-if="admin" class="cell small-3">
                   <button class="button alert fright" @click="skip">
@@ -41,7 +41,7 @@ const eta = computed(() =>{
                   </button>
                   <button 
                     class="button alert fright" 
-                    v-if="!current" 
+                    v-if="!current && !waitingRoom" 
                     @click="$emit('moveUp', entry.uuid)" >
                   <font-awesome-icon icon="fa-solid fa-arrow-up" />
                   </button>
