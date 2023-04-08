@@ -30,7 +30,8 @@ const state = ref({
     'searching': false,
     'last_msg': "",
     'join_msg': null,
-    'uid': null
+    'uid': null,
+    'double_entry': {'artist': null, 'title': null, 'reason': null}
 })
 
 onMounted(() => { 
@@ -87,14 +88,31 @@ function checked_append_with_name(entry, name) {
     } else {
         $("#getusername").foundation("close");
 
-        var in_queue = false;
+        var splitUserName = name.toLowerCase().split(/\b/).filter(e => e.trim().length > 3); 
+        var uid_in_queue = false;
+        var name_in_queue = false;
         for (const entry of state.value.queue) {
-            if(entry.uid == state.value.uid) { 
-                in_queue = true;
+            if(entry.uid == state.value.uid && !state.value.admin) { 
+                state.value.double_entry = entry;
+                state.value.double_entry.reason = "uid";
+                uid_in_queue = true;
+                break;
+            }
+
+            var splitEntryUserName = entry.performer.toLowerCase().split(/\b/).filter(e => e.trim().length > 3); 
+            var difference = splitUserName.filter(x => splitEntryUserName.includes(x));
+            console.log(splitUserName);
+            console.log(splitEntryUserName);
+            console.log(difference);
+            if (difference.length > 0) {
+                state.value.double_entry = entry;
+                state.value.double_entry.reason = "name";
+                name_in_queue = true;
+                break;
             }
         }
 
-        if(in_queue && !state.value.admin) {
+        if(name_in_queue || uid_in_queue) {
             state.value.current_entry = entry;
             $("#alreadyqueued").foundation("open");
         } else {
@@ -109,6 +127,7 @@ function raw_append(ident, name, source, uid) {
 
     state.value.current_name = null;
     state.value.current_entry = null;
+    state.value.double_entry = {'artist': null, 'title': null, 'reason': null};
     state.socket.emit("append", {"ident": ident, "performer": name, "source": source, "uid": uid });
     $("#queue-tab-title").click();
 }
@@ -259,8 +278,9 @@ function joinRoom() {
       />
     <AlreadyQueued
       @append="raw_append(state.current_entry.ident, state.name ? state.name : state.current_name, state.current_entry.source, state.uid)"
-      @wait="wait_append(state.current_entry.ident, state.name ? state.name : state.current_name, state.current_entry.source, state.uid)"
+      @wait="(uid) => wait_append(state.current_entry.ident, state.name ? state.name : state.current_name, state.current_entry.source, uid)"
       @cancel="close_already_queued"
+      :double_entry="state.double_entry"
       />
     <div class="reveal" id="msg" data-reveal>
       {{ state.last_msg }}
