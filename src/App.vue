@@ -92,12 +92,12 @@ function checked_append_with_name(entry, name) {
         var uid_in_queue = false;
         var name_in_queue = false;
         for (const entry of state.value.queue) {
-            if(entry.uid == state.value.uid && !state.value.admin) { 
+            /* if(entry.uid == state.value.uid && !state.value.admin) { 
                 state.value.double_entry = entry;
                 state.value.double_entry.reason = "uid";
                 uid_in_queue = true;
                 break;
-            }
+            } */
 
             var splitEntryUserName = entry.performer.toLowerCase().split(/\b/).filter(e => e.trim().length > 3); 
             var difference = splitUserName.filter(x => splitEntryUserName.includes(x));
