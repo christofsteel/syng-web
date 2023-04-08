@@ -101,9 +101,6 @@ function checked_append_with_name(entry, name) {
 
             var splitEntryUserName = entry.performer.toLowerCase().split(/\b/).filter(e => e.trim().length > 3); 
             var difference = splitUserName.filter(x => splitEntryUserName.includes(x));
-            console.log(splitUserName);
-            console.log(splitEntryUserName);
-            console.log(difference);
             if (difference.length > 0) {
                 state.value.double_entry = entry;
                 state.value.double_entry.reason = "name";
