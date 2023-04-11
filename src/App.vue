@@ -275,7 +275,7 @@ function joinRoom() {
       />
     <AlreadyQueued
       @append="raw_append(state.current_entry.ident, state.name ? state.name : state.current_name, state.current_entry.source, state.uid)"
-      @wait="(uid) => wait_append(state.current_entry.ident, state.name ? state.name : state.current_name, state.current_entry.source, uid)"
+      @wait="(uid) => wait_append(state.current_entry.ident, state.name ? state.name : state.current_name, state.current_entry.source, null)"
       @cancel="close_already_queued"
       :double_entry="state.double_entry"
       />
