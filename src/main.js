@@ -36,7 +36,7 @@ const router = createRouter({
   routes}
 )
 
-app = createApp(Main)
+var app = createApp(Main)
 app.component('font-awesome-icon', FontAwesomeIcon)
 app.use(router)
 app.mount('#app')
