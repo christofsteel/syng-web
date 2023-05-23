@@ -198,10 +198,11 @@ function registerSocketEvents() {
     })
 
     state.socket.on("err", (response) => {    
+        console.log(response)
         switch(response.type) {
-        "QUEUE_FULL":
+        case "QUEUE_FULL":
             var prefix = "The song queue is full and ends at ";
-            date = new Date(response.end_time * 1000).toLocaleTimeString;
+            var date = new Date(response.end_time * 1000).toLocaleString();
             state.value.last_msg = prefix + date;
             break;
         default:
