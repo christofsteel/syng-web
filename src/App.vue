@@ -196,6 +196,20 @@ function registerSocketEvents() {
         state.value.last_msg = response.msg
         $("#msg").foundation("open")
     })
+
+    state.socket.on("err", (response) => {    
+        switch(response.type) {
+        "QUEUE_FULL":
+            var prefix = "The song queue is full and ends at ";
+            date = new Date(response.end_time * 1000).toLocaleTimeString;
+            state.value.last_msg = prefix + date;
+            break;
+        default:
+            state.value.last_msg = "Unknown Error";
+            break;
+        }
+        $("#msg").foundation("open")
+    })
 }
 
 function joinRoom() {
