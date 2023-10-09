@@ -88,7 +88,11 @@ function checked_append_with_name(entry, name) {
     } else {
         $("#getusername").foundation("close");
 
-        var splitUserName = name.toLowerCase().split(/\b/).filter(e => e.trim().length > 3); 
+        var splitUserName = name.toLowerCase()
+            .replace(".", " ")
+            .replace(","," ")
+            .replace(/[^a-zA-Z0-9\s\b]/, "")
+            .split(/\b/).filter(e => e.trim().length > 0 && !["der", "die", "das", "und", "alle"].includes(e)); 
         var uid_in_queue = false;
         var name_in_queue = false;
         for (const entry of state.value.queue) {
@@ -99,7 +103,11 @@ function checked_append_with_name(entry, name) {
                 break;
             } */
 
-            var splitEntryUserName = entry.performer.toLowerCase().split(/\b/).filter(e => e.trim().length > 3); 
+            var splitEntryUserName = entry.performer.toLowerCase()
+                .replace(".", " ")
+                .replace(","," ")
+                .replace(/[^a-zA-Z0-9\s\b]/, "")
+                .split(/\b/).filter(e => e.trim().length > 0 && !["der", "die", "das", "und", "alle"].includes(e)); 
             var difference = splitUserName.filter(x => splitEntryUserName.includes(x));
             if (difference.length > 0) {
                 state.value.double_entry = entry;
