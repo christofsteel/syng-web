@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 const props = defineProps(['admin', 'entry', 'current', 'firstStartedAt', 'offset', 'currentTime', 'waitingRoom'])
-const emits = defineEmits(['skip', 'skipCurrent', 'moveUp'])
+const emits = defineEmits(['skip', 'skipCurrent', 'moveUp', 'waitingRoomToQueue'])
 
 function skip() {
   if(props.current) {
@@ -36,11 +36,17 @@ const eta = computed(() =>{
             <span v-if="!current && !waitingRoom" class="eta">{{ eta }}</span>
           </div>
           <div v-if="admin" class="cell small-3">
-                  <button class="button alert fright" @click="skip">
+                  <button v-if="!waitingRoom" class="button alert fright" @click="skip">
                   <font-awesome-icon icon="fa-solid fa-times" />
                   </button>
                   <button 
-                    class="button alert fright" 
+                    class="button success fright" 
+                    v-if="waitingRoom" 
+                    @click="$emit('waitingRoomToQueue', entry.uuid)" >
+                  <font-awesome-icon icon="fa-solid fa-arrows-up-to-line" />
+                  </button>
+                  <button 
+                    class="button warning fright" 
                     v-if="!current && !waitingRoom" 
                     @click="$emit('moveUp', entry.uuid)" >
                   <font-awesome-icon icon="fa-solid fa-arrow-up" />

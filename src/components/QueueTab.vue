@@ -2,7 +2,7 @@
 import QueueInner from './QueueInner.vue'
 
 const props = defineProps(['queue', 'waiting_room', 'admin']);
-const emits = defineEmits(['skip', 'skipCurrent', 'moveUp'])
+const emits = defineEmits(['skip', 'skipCurrent', 'moveUp', 'waitingRoomToQueue'])
 </script>
 
 <template>
@@ -14,6 +14,7 @@ const emits = defineEmits(['skip', 'skipCurrent', 'moveUp'])
       @skip="(uuid) => $emit('skip', uuid)" 
       @moveUp="(uuid) => $emit('moveUp', uuid)" 
       @skipCurrent="$emit('skipCurrent')"
-      />
-  </div>
+      @waitingRoomToQueue="(uuid) => $emit('waitingRoomToQueue', uuid)"
+    />
+</div>
 </template>

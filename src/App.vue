@@ -77,6 +77,10 @@ function search() {
   }
 }
 
+function waitingRoomToQueue(uuid) {
+    state.socket.emit("waiting-room-to-queue", {"uuid": uuid})
+}
+
 function append(entry) {
     checked_append_with_name(entry, state.value.name) 
 }
@@ -265,6 +269,7 @@ function joinRoom() {
         @skip="skip"
         @skipCurrent="skipCurrent"
         @moveUp="moveUp"
+        @waitingRoomToQueue="waitingRoomToQueue"
         />
     <DesktopLayout 
         v-show="!state.is_small" 
@@ -275,6 +280,7 @@ function joinRoom() {
         @skip="skip"
         @skipCurrent="skipCurrent"
         @moveUp="moveUp"
+        @waitingRoomToQueue="waitingRoomToQueue"
         />
     <WelcomeReveal
       v-if="!state.joined"
@@ -312,6 +318,7 @@ function joinRoom() {
   <Footer
     :name="state.name"
     @update:name="setName"
+    @admin="state.admin"
     @logout="emptyLocalStorageAndLogout"
     />
 </div>
