@@ -1,6 +1,6 @@
 <script setup>
-const props = defineProps(['name'])
-const emits = defineEmits(['update:name', 'logout'])
+const props = defineProps(['name', 'admin', 'show_name'])
+const emits = defineEmits(['update:name', 'logout', 'config'])
 </script>
 <template>
   <footer>
@@ -13,6 +13,7 @@ const emits = defineEmits(['update:name', 'logout'])
       {{ name }}
     </span>
     <div class="button alert fright" @click="$emit('logout')">Log out</div>
+    <div v-if="admin" class="button alert fright" @click="$emit('config')">Config</div>
   </footer>
 </template>
 <style scoped>

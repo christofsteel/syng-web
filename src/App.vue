@@ -10,6 +10,7 @@ import WelcomeReveal from './components/WelcomeReveal.vue'
 import GetUserName from './components/GetUserName.vue'
 import Footer from './components/Footer.vue'
 import AlreadyQueued from './components/AlreadyQueued.vue'
+import Config from './components/Config.vue'
 
 const router = useRouter()
 
@@ -31,7 +32,9 @@ const state = ref({
     'last_msg': "",
     'join_msg': null,
     'uid': null,
-    'double_entry': {'artist': null, 'title': null, 'reason': null}
+    'double_entry': {'artist': null, 'title': null, 'reason': null},
+    'waiting_room_policy': null,
+    'config': {}
 })
 
 onMounted(() => { 
@@ -66,6 +69,10 @@ function setCurrentName(name) { state.value.current_name = name }
 function updateName(evt) { evt.target.textContent = state.value.name;}
 function setServer(server) { state.value.server = server }
 function setSearchTerm(searchTerm) { state.value.search.searchTerm = searchTerm }
+function update_config(config) {     
+    state.socket.emit("update_config", {"config": config})
+    close_config()
+}
 
 function search() {
   var yt_checker = /^(?:https?:\/\/)?(?:www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/;
@@ -76,6 +83,10 @@ function search() {
     state.socket.emit("search", {"query": state.value.search.searchTerm })
   }
 }
+
+function show_config() {
+        state.socket.emit("show_config");
+        }
 
 function waitingRoomToQueue(uuid) {
     state.socket.emit("waiting-room-to-queue", {"uuid": uuid})
@@ -91,43 +102,19 @@ function checked_append_with_name(entry, name) {
         $("#getusername").foundation("open");
     } else {
         $("#getusername").foundation("close");
-
-        var splitUserName = name.toLowerCase()
-            .replace(".", " ")
-            .replace(","," ")
-            .replace(/[^a-zA-Z0-9\s\b]/, "")
-            .split(/\b/).filter(e => e.trim().length > 0 && !["der", "die", "das", "und", "alle"].includes(e)); 
-        var uid_in_queue = false;
-        var name_in_queue = false;
-        for (const entry of state.value.queue) {
-            /* if(entry.uid == state.value.uid && !state.value.admin) { 
-                state.value.double_entry = entry;
-                state.value.double_entry.reason = "uid";
-                uid_in_queue = true;
-                break;
-            } */
-
-            var splitEntryUserName = entry.performer.toLowerCase()
-                .replace(".", " ")
-                .replace(","," ")
-                .replace(/[^a-zA-Z0-9\s\b]/, "")
-                .split(/\b/).filter(e => e.trim().length > 0 && !["der", "die", "das", "und", "alle"].includes(e)); 
-            var difference = splitUserName.filter(x => splitEntryUserName.includes(x));
-            if (difference.length > 0) {
-                state.value.double_entry = entry;
-                state.value.double_entry.reason = "name";
-                name_in_queue = true;
-                break;
-            }
-        }
-
-        if(name_in_queue || uid_in_queue) {
-            state.value.current_entry = entry;
-            $("#alreadyqueued").foundation("open");
-        } else {
-            raw_append(entry.ident, name, entry.source, state.value.uid);
-        }
+        raw_append(entry.ident, name, entry.source, state.value.uid);
     }
+}
+
+function append_anyway(ident, name, source, uid) {
+    $("#getusername").foundation("close");
+    $("#alreadyqueued").foundation("close");
+
+    state.value.current_name = null;
+    state.value.current_entry = null;
+    state.value.double_entry = {'artist': null, 'title': null, 'reason': null};
+    state.socket.emit("append-anyway", {"ident": ident, "performer": name, "source": source, "uid": uid });
+    $("#queue-tab-title").click();
 }
 
 function raw_append(ident, name, source, uid) {
@@ -155,6 +142,9 @@ function close_name() {
   $("#getusername").foundation("close")
   state.value.current_entry = null
   state.value.current_name = null
+}
+function close_config() {
+  $("#config").foundation("close")
 }
 
 function close_already_queued() {
@@ -202,12 +192,30 @@ function registerSocketEvents() {
       state.value.queue=val.queue
       state.value.recent=val.recent
       state.value.waiting_room = val.waiting_room
+      state.value.waiting_room_policy = val.config.waiting_room_policy
+    })
+
+    state.socket.on("config", (response) => {
+        state.value.config=response
+        $("#config").foundation("open")
+    })
+
+    state.socket.on("update_config", (response) => {
+        console.log(response)
+        state.value.waiting_room_policy = response["waiting_room_policy"]
+        console.log(state)
     })
 
     state.socket.on("msg", (response) => {        
         state.value.last_msg = response.msg
         $("#msg").foundation("open")
     })
+
+    state.socket.on("ask_for_waitingroom", (response) => {
+        state.value.double_entry = response.old_entry;
+        state.value.current_entry = response.current_entry;
+        $("#alreadyqueued").foundation("open");
+    }) 
 
     state.socket.on("err", (response) => {    
         console.log(response)
@@ -216,6 +224,12 @@ function registerSocketEvents() {
             var prefix = "The song queue is full and ends at ";
             var date = new Date(response.end_time * 1000).toLocaleString();
             state.value.last_msg = prefix + date;
+            break;
+        case "JSON_MALFORMED":
+            state.value.last_msg = "Malformed JSON in config"
+            break;
+        case "NO_ADMIN":
+            state.value.last_msg = "Forbidden: Not in admin mode"
             break;
         default:
             state.value.last_msg = "Unknown Error";
@@ -303,9 +317,10 @@ function joinRoom() {
       @close_name="close_name"
       />
     <AlreadyQueued
-      @append="raw_append(state.current_entry.ident, state.name ? state.name : state.current_name, state.current_entry.source, state.uid)"
+      @append="append_anyway(state.current_entry.ident, state.name ? state.name : state.current_name, state.current_entry.source, state.uid)"
       @wait="(uid) => wait_append(state.current_entry.ident, state.name ? state.name : state.current_name, state.current_entry.source, null)"
       @cancel="close_already_queued"
+      :waiting_room_policy="state.waiting_room_policy"
       :double_entry="state.double_entry"
       />
     <div class="reveal" id="msg" data-reveal>
@@ -317,10 +332,13 @@ function joinRoom() {
   </div>
   <Footer
     :name="state.name"
+    :admin="state.admin"
+    :show_name="state.show_name"
     @update:name="setName"
-    @admin="state.admin"
     @logout="emptyLocalStorageAndLogout"
+    @config="show_config"
     />
+      <Config :config="state.config" @update_config="update_config" @close="close_config"/>
 </div>
 </template>
 

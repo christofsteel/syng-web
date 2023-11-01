@@ -23,6 +23,7 @@ const emit = defineEmits(['update:searchTerm', 'search', 'append', 'skip', 'skip
             :queue="state.queue"
             :admin="state.admin"
             :waiting_room="state.waiting_room"
+            :waiting_room_enabled="state.waiting_room_enabled"
             @skip="(uuid) => $emit('skip', uuid)"
             @moveUp="(uuid) => $emit('moveUp', uuid)"
             @skipCurrent="$emit('skipCurrent')"

@@ -1,6 +1,6 @@
 <script setup>
 const emits = defineEmits(["append", "wait", "cancel"]);
-const props = defineProps(["double_entry"]);
+const props = defineProps(["double_entry", "waiting_room_policy"]);
 </script>
 <template>
 <div class="reveal" id="alreadyqueued" data-reveal >
@@ -22,6 +22,9 @@ Songs in the waiting room will be added to the queue, once your old song leaves 
   </div>
   <div class="cell medium-6 small-12 btn">
     <button class="button expanded alert" @click="$emit('cancel')">Cancel</button>
+  </div>
+  <div v-show="waiting_room_policy && waiting_room_policy.toLowerCase() == 'optional'" class="cell medium-12 small-12 btn">
+    <button class="button expanded" @click="$emit('append')">Append Anyway</button>
   </div>
 </div>
 </div>
