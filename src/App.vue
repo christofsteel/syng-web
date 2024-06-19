@@ -231,6 +231,12 @@ function registerSocketEvents() {
         case "NO_ADMIN":
             state.value.last_msg = "Forbidden: Not in admin mode"
             break;
+        case "PROFANITY":
+            state.value.last_msg = "Your name \"" + response.name + "\" may contain profanity, please choose another name!"
+            break;
+        case "NAME_LENGTH":
+            state.value.last_msg = "Your name \"" + response.name + "\" is to long (> 50 Characters), please choose another name!"
+            break;
         default:
             state.value.last_msg = "Unknown Error";
             break;
