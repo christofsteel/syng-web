@@ -264,10 +264,8 @@ function joinRoom() {
     } else {
       state.value.join_msg = "<strong>No such room!</strong> <br/>" + 
                 "Please use the correct room code your organizer provided you.<br/>" + 
-                "To host your own syng powered karaoke parties, please download and " + 
-                "install <a href='https://git.k-fortytwo.de/christofsteel/syng2.git' " +
-                "target='_blank'>Syng</a> and run it with <pre>syng-client " + 
-                state.value.server + "</pre>"
+                "To host your own syng powered karaoke events, please download and " + 
+                "install <a href='https://github.com/christofsteel/syng' target='_blank'>Syng</a>"
         if(state.value.joined) {
             state.socket.disconnect()
             setTimeout(() => connect(), 2000)
