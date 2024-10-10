@@ -106,14 +106,14 @@ function checked_append_with_name(entry, name) {
     }
 }
 
-function append_anyway(ident, name, source, uid) {
+function append_anyway(entry) {
     $("#getusername").foundation("close");
     $("#alreadyqueued").foundation("close");
 
     state.value.current_name = null;
     state.value.current_entry = null;
     state.value.double_entry = {'artist': null, 'title': null, 'reason': null};
-    state.socket.emit("append-anyway", {"ident": ident, "performer": name, "source": source, "uid": uid });
+    state.socket.emit("append-anyway", {"ident": entry.ident, "performer": entry.performer, "source": entry.source, "uid": null });
     $("#queue-tab-title").click();
 }
 
@@ -128,13 +128,14 @@ function raw_append(ident, name, source, uid) {
     $("#queue-tab-title").click();
 }
 
-function wait_append(ident, name, source, uid) {
+function wait_append(entry) {
     $("#getusername").foundation("close");
     $("#alreadyqueued").foundation("close");
+    console.log(entry)
 
+    state.socket.emit("waiting-room-append", {"ident": entry.ident, "performer": entry.performer, "source": entry.source, "uid": null });
     state.value.current_name = null;
     state.value.current_entry = null;
-    state.socket.emit("waiting-room-append", {"ident": ident, "performer": name, "source": source, "uid": uid });
     $("#queue-tab-title").click();
 }
 
@@ -321,11 +322,12 @@ function joinRoom() {
       @close_name="close_name"
       />
     <AlreadyQueued
-      @append="append_anyway(state.current_entry.ident, state.name ? state.name : state.current_name, state.current_entry.source, state.uid)"
-      @wait="(uid) => wait_append(state.current_entry.ident, state.name ? state.name : state.current_name, state.current_entry.source, null)"
+      @append="append_anyway"
+      @wait="wait_append"
       @cancel="close_already_queued"
       :waiting_room_policy="state.waiting_room_policy"
       :double_entry="state.double_entry"
+      :current_entry="state.current_entry"
       />
     <div class="reveal" id="msg" data-reveal>
       {{ state.last_msg }}

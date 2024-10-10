@@ -1,6 +1,6 @@
 <script setup>
 const emits = defineEmits(["append", "wait", "cancel"]);
-const props = defineProps(["double_entry", "waiting_room_policy"]);
+const props = defineProps(["double_entry", "current_entry", "waiting_room_policy"]);
 </script>
 <template>
 <div class="reveal" id="alreadyqueued" data-reveal >
@@ -10,21 +10,20 @@ const props = defineProps(["double_entry", "waiting_room_policy"]);
 </p>
 <p>To give everyone a chance to sing, you are limited to one song in the active queue, but you can add yourself to the <b>waiting room</b>.
 Songs in the waiting room will be added to the queue, once your old song leaves the queue.</p>
-<p>If you think this is an error, you can
+<p>If you think this is an error, you can</p>
 <ul>
 <li>choose another name, or</li>
 <li>add it to the waiting room and talk to the organizers for manual insertion into the queue.</li>
 </ul>
-</p>
 <div class="grid-x">
   <div class="cell medium-6 small-12 btn">
-    <button class="button expanded" @click="$emit('wait', double_entry.reason == 'uid' ? double_entry.uid : null)">Add to waiting room</button>
+    <button class="button expanded" @click="$emit('wait', current_entry)">Add to waiting room</button>
   </div>
   <div class="cell medium-6 small-12 btn">
     <button class="button expanded alert" @click="$emit('cancel')">Cancel</button>
   </div>
   <div v-show="waiting_room_policy && waiting_room_policy.toLowerCase() == 'optional'" class="cell medium-12 small-12 btn">
-    <button class="button expanded" @click="$emit('append')">Append Anyway</button>
+    <button class="button expanded" @click="$emit('append', current_entry)">Append Anyway</button>
   </div>
 </div>
 </div>
