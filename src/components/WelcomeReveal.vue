@@ -2,8 +2,8 @@
 import { onMounted, onBeforeUnmount } from 'vue'
 import $ from 'jquery'
 
-const emits = defineEmits(['connect', 'update:room', 'update:name', 'update:server', 'update:secret'])
-const props = defineProps(['room', 'server', 'secret', 'name', 'joinMsg'])
+const emits = defineEmits(['connect', 'update:room', 'update:name', 'update:server', 'update:secret', 'update:kiosk'])
+const props = defineProps(['room', 'server', 'secret', 'name', 'joinMsg', 'kiosk'])
 
 onMounted(() => {
   $(document).foundation();
@@ -54,6 +54,11 @@ onBeforeUnmount(() => {
                 <input type="password" @input="$emit('update:secret', $event.target.value)" :value="secret" placeholder="Leave free, if not admin">
               </label>
             </div>
+            <div class="medium-12 cell">
+                <label>Kiosk mode
+                  <input type="checkbox" id="kiosk" @change="$emit('update:kiosk', $event.target.checked)">
+                </label>
+              </div>
           </div>
         </div>
       </div>

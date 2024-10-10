@@ -34,7 +34,8 @@ const state = ref({
     'uid': null,
     'double_entry': {'artist': null, 'title': null, 'reason': null},
     'waiting_room_policy': null,
-    'config': {}
+    'config': {},
+    'kiosk': false
 })
 
 onMounted(() => { 
@@ -73,6 +74,7 @@ function update_config(config) {
     state.socket.emit("update_config", {"config": config})
     close_config()
 }
+function setKiosk(kiosk) { state.value.kiosk = kiosk }
 
 function search() {
   var yt_checker = /^(?:https?:\/\/)?(?:www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/;
@@ -278,7 +280,7 @@ function joinRoom() {
 
 <template>
 <div class="page">
-  <div class="row" id="main-content">
+  <div class="row" :id="state.kiosk ? 'main-content-kiosk' : 'main-content'">
     <MobileLayout 
         v-show="state.is_small" 
         :state="state" 
@@ -308,11 +310,13 @@ function joinRoom() {
       :joinMsg="state.join_msg"
       :name="state.name"
       :secret="state.secret"
+      :kiosk="state.kiosk"
       @connect="connect"
       @update:room="setRoomCode"
       @update:name="setName"
       @update:server="setServer"
       @update:secret="setSecret" 
+      @update:kiosk="setKiosk"
       />
     <GetUserName
       :current_name="state.current_name"
@@ -339,7 +343,7 @@ function joinRoom() {
   <Footer
     :name="state.name"
     :admin="state.admin"
-    :show_name="state.show_name"
+    :kiosk="state.kiosk"
     @update:name="setName"
     @logout="emptyLocalStorageAndLogout"
     @config="show_config"
@@ -362,9 +366,14 @@ function joinRoom() {
     height: 100%;
     position: relative;
 }
-
 #main-content {
     height: calc(100vh - 50px);
+    max-height: 100vh;
+    max-width: 100vw;
+}
+
+#main-content-kiosk {
+    height: 100vh;
     max-height: 100vh;
     max-width: 100vw;
 }

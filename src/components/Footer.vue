@@ -1,9 +1,9 @@
 <script setup>
-const props = defineProps(['name', 'admin', 'show_name'])
+const props = defineProps(['name', 'admin', 'kiosk'])
 const emits = defineEmits(['update:name', 'logout', 'config'])
 </script>
 <template>
-  <footer>
+  <footer v-if="!kiosk">
     Name: <span
       class="userName"
       @keyup.enter="(evt) => evt.target.blur()"
