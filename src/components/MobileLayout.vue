@@ -5,7 +5,7 @@ import RecentTab from './RecentTab.vue'
 import TabHeader from './TabHeader.vue'
 
 const props = defineProps(['state']);
-const emit = defineEmits(['update:searchTerm', 'search', 'append', 'skip', 'skipCurrent', 'moveUp', 'waitingRoomToQueue'])
+const emit = defineEmits(['update:searchTerm', 'search', 'append', 'skip', 'skipCurrent', 'moveUp', 'waitingRoomToQueue', 'notify_enable', 'notify_disable'])
 
 </script>
 
@@ -18,12 +18,16 @@ const emit = defineEmits(['update:searchTerm', 'search', 'append', 'skip', 'skip
             <TabHeader link="#recent-list" icon="fa-history" />
         </div>
         <div class="tabs-container" data-tabs-content="main-tab">
-          <SearchTab :search="state.search" :searching="state.searching" @update:searchTerm="(val) => $emit('update:searchTerm', val)" @search="$emit('search')" @append="(entry) => $emit('append', entry)"/>
+          <SearchTab :socket="state.socket" :search="state.search" :searching="state.searching" @update:searchTerm="(val) => $emit('update:searchTerm', val)" @search="$emit('search')" @append="(entry) => $emit('append', entry)"/>
           <QueueTab
+            :socket="state.socket"
             :queue="state.queue"
             :admin="state.admin"
             :waiting_room="state.waiting_room"
             :waiting_room_enabled="state.waiting_room_enabled"
+            :notify_me="state.notify_me"
+            @notify_disable="(uuid) => $emit('notify_disable', uuid)"
+            @notify_enable="(uuid) => $emit('notify_enable', uuid)"
             @skip="(uuid) => $emit('skip', uuid)"
             @moveUp="(uuid) => $emit('moveUp', uuid)"
             @skipCurrent="$emit('skipCurrent')"

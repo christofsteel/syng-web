@@ -2,8 +2,8 @@
 import { onMounted, reactive } from 'vue'
 import Entry from './Entry.vue'
 
-const props = defineProps(['queue', 'waiting_room', 'admin', 'waiting_room_policy']);
-const emits = defineEmits(['skip', 'skipCurrent', 'moveUp', 'waitingRoomToQueue'])
+const props = defineProps(['socket', 'queue', 'waiting_room', 'admin', 'waiting_room_policy', 'notify_me']);
+const emits = defineEmits(['skip', 'skipCurrent', 'moveUp', 'waitingRoomToQueue', 'notify_disable', 'notify_enable'])
 
 let currentTime = reactive({time: Date.now()})
 
@@ -31,12 +31,17 @@ function offset(index) {
           <ul id="queue" class="vertical menu">
           <Entry 
             v-for="(entry, index) in queue" 
+            :socket="socket"
             :entry="entry" 
             :current="index == 0" 
+            :isQueue="true"
             :admin="admin"
+            :notify_me="notify_me"
             :firstStartedAt="queue[0].started_at"
             :currentTime="currentTime.time"
             :offset="offset(index)"
+            @notify_enable="(uuid) => $emit('notify_enable', uuid)" 
+            @notify_disable="(uuid) => $emit('notify_disable', uuid)" 
             @skip="(uuid) => $emit('skip', uuid)" 
             @skipCurrent="$emit('skipCurrent')"
             @moveUp="(uuid) => $emit('moveUp', uuid)" 
