@@ -5,7 +5,7 @@ import RecentTab from './RecentTab.vue'
 import TabHeader from './TabHeader.vue'
 
 const props = defineProps(['state']);
-const emit = defineEmits(['update:searchTerm', 'search', 'append', 'skip', 'skipCurrent', 'moveUp', 'waitingRoomToQueue'])
+const emit = defineEmits(['update:searchTerm', 'search', 'append', 'skip', 'skipCurrent', 'moveUp', 'waitingRoomToQueue', 'moveTo'])
 
 </script>
 
@@ -26,6 +26,7 @@ const emit = defineEmits(['update:searchTerm', 'search', 'append', 'skip', 'skip
             :waiting_room_policy="state.waiting_room_policy"
             @skip="(uuid) => $emit('skip', uuid)"
             @moveUp="(uuid) => $emit('moveUp', uuid)"
+            @moveTo="(data) => $emit('moveTo', data)"
             @skipCurrent="$emit('skipCurrent')"
             @waitingRoomToQueue="(uuid) => $emit('waitingRoomToQueue', uuid)"
             /> 

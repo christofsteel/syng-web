@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 const props = defineProps(['admin', 'entry', 'current', 'firstStartedAt', 'offset', 'currentTime', 'waitingRoom'])
-const emits = defineEmits(['skip', 'skipCurrent', 'moveUp', 'waitingRoomToQueue'])
+const emits = defineEmits(['skip', 'skipCurrent', 'moveUp', 'waitingRoomToQueue', 'moveTo'])
 
 function skip() {
   if(props.current) {
@@ -24,10 +24,56 @@ const eta = computed(() =>{
   }
 })
 
+const dragging = (e) => {
+ const data = {
+   uuid: props.entry.uuid,
+   index: $(e.target.closest('li')).index()}
+   console.log(data)
+ e.dataTransfer.clearData()
+ e.dataTransfer.setData('application/json', JSON.stringify(data))
+ e.dataTransfer.effectAllowed = 'move'
+}
+
+const dragend = (e) => {
+  e.preventDefault()
+  e.target.closest('li').classList.remove('draggedoverBottom')
+  e.target.closest('li').classList.remove('draggedoverTop')
+}
+
+const dropped = (e) => {
+  e.preventDefault()
+  e.target.closest('li').classList.remove('draggedoverBottom')
+  e.target.closest('li').classList.remove('draggedoverTop')
+  const drop_index = $(e.target.closest('li')).index()
+  const element = JSON.parse(e.dataTransfer.getData('application/json'))
+  if (element.index < drop_index) {
+    emits('moveTo', {"uuid": element.uuid  , "target": drop_index + 1})
+  } else {
+    emits('moveTo', {"uuid": element.uuid  , "target": drop_index})
+    }
+}
+
+const dragover = (e) => {
+  e.preventDefault()
+  e.dataTransfer.dropEffect = 'move'
+  const element = JSON.parse(e.dataTransfer.getData('application/json'))
+  const index = $(e.target.closest('li')).index()
+  if (index < element.index) {
+    e.target.closest('li').classList.add('draggedoverTop')
+  } else {
+    e.target.closest('li').classList.add('draggedoverBottom')
+  }
+}
+const dragleave = (e) => {
+  e.preventDefault()
+  e.target.closest('li').classList.remove('draggedoverTop')
+  e.target.closest('li').classList.remove('draggedoverBottom')
+}
+
 </script>
 
 <template>
-  <li :class="[{ current: current }, {waitingRoom: waitingRoom}]">
+  <li :class="[{ current: current }, {waitingRoom: waitingRoom}]" :draggable="admin" @dragstart="dragging" @dragend="dragend" @dragover="dragover" @dragleave="dragleave" @drop="dropped">
       <div class="grid-x">
           <div class="cell" :class="{'small-9': admin}">
             <span class="artist">{{ entry.artist }}</span>
@@ -45,12 +91,12 @@ const eta = computed(() =>{
                     @click="$emit('waitingRoomToQueue', entry.uuid)" >
                   <font-awesome-icon icon="fa-solid fa-arrows-up-to-line" />
                   </button>
-                  <button 
-                    class="button warning fright" 
-                    v-if="!current && !waitingRoom" 
-                    @click="$emit('moveUp', entry.uuid)" >
-                  <font-awesome-icon icon="fa-solid fa-arrow-up" />
-                  </button>
+                  <!-- <button  -->
+                  <!--   class="button warning fright"  -->
+                  <!--   v-if="!current && !waitingRoom"  -->
+                  <!--   @click="$emit('moveUp', entry.uuid)" > -->
+                  <!-- <font-awesome-icon icon="fa-solid fa-arrow-up" /> -->
+                  <!-- </button> -->
           </div>
       </div>
 
@@ -74,6 +120,14 @@ const eta = computed(() =>{
 
 .eta::before {
     content: "in ";
+}
+
+.draggedoverTop {
+  border-top: 2px solid #008000;
+}
+
+.draggedoverBottom {
+  border-bottom: 2px solid #008000;
 }
 
 </style>

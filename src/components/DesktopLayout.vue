@@ -4,7 +4,7 @@ import QueueDesktop from './QueueDesktop.vue'
 import RecentDesktop from './RecentDesktop.vue'
 
 const props = defineProps(['state']);
-const emit = defineEmits(['update:searchTerm', 'search', 'append', 'skip', 'skipCurrent', 'moveUp', 'waitingRoomToQueue'])
+const emit = defineEmits(['update:searchTerm', 'search', 'append', 'skip', 'skipCurrent', 'moveUp', 'waitingRoomToQueue', 'moveTo'])
 </script>
 
 
@@ -18,6 +18,7 @@ const emit = defineEmits(['update:searchTerm', 'search', 'append', 'skip', 'skip
       :admin="state.admin"
       @skip="(uuid) => $emit('skip', uuid)"
       @moveUp="(uuid) => $emit('moveUp', uuid)"
+      @moveTo="(data) => $emit('moveTo', data)"
       @skipCurrent="$emit('skipCurrent')"
       @waitingRoomToQueue="(uuid) => $emit('waitingRoomToQueue', uuid)"
     /> 

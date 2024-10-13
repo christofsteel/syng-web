@@ -176,6 +176,10 @@ function moveUp(uuid) {
     state.socket.emit("move-up", {"uuid": uuid})
 }
 
+function moveTo(data) {
+    state.socket.emit("move-to", data)
+}
+
 function skip(uuid) {
     state.socket.emit("skip", {"uuid": uuid})
 }
@@ -290,6 +294,7 @@ function joinRoom() {
         @skip="skip"
         @skipCurrent="skipCurrent"
         @moveUp="moveUp"
+        @moveTo="moveTo"
         @waitingRoomToQueue="waitingRoomToQueue"
         />
     <DesktopLayout 
@@ -301,6 +306,7 @@ function joinRoom() {
         @skip="skip"
         @skipCurrent="skipCurrent"
         @moveUp="moveUp"
+        @moveTo="moveTo"
         @waitingRoomToQueue="waitingRoomToQueue"
         />
     <WelcomeReveal
