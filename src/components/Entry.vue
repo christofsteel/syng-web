@@ -16,7 +16,7 @@ const eta = computed(() =>{
   let startTime = new Date(props.firstStartedAt * 1000)
   let playBackSeconds = (now - startTime) / 1000
   let etaSeconds = Math.round(props.offset - playBackSeconds)
-  if etaSeconds < 0 {
+  if (etaSeconds < 0) {
     etaSeconds = 0
   }
   
