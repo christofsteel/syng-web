@@ -13,7 +13,7 @@ const emits = defineEmits(['update:name', 'logout', 'config'])
       {{ name }}
     </span>
     <div class="button alert fright" @click="$emit('logout')">Log out</div>
-    <div v-if="admin" class="button alert fright" @click="$emit('config')">Config</div>
+    <!-- <div v-if="admin" class="button alert fright" @click="$emit('config')">Config</div> -->
   </footer>
 </template>
 <style scoped>
