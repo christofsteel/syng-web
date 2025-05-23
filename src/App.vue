@@ -94,6 +94,11 @@ function waitingRoomToQueue(uuid) {
     state.socket.emit("waiting-room-to-queue", {"uuid": uuid})
 }
 
+function queueToWaitingRoom(uuid) {
+    console.log(uuid)
+    state.socket.emit("queue-to-waiting-room", {"uuid": uuid})
+}
+
 function append(entry) {
     checked_append_with_name(entry, state.value.name) 
 }
@@ -295,6 +300,7 @@ function joinRoom() {
         @moveUp="moveUp"
         @moveTo="moveTo"
         @waitingRoomToQueue="waitingRoomToQueue"
+        @queueToWaitingRoom="queueToWaitingRoom"
         />
     <DesktopLayout 
         v-show="!state.is_small" 
@@ -307,6 +313,7 @@ function joinRoom() {
         @moveUp="moveUp"
         @moveTo="moveTo"
         @waitingRoomToQueue="waitingRoomToQueue"
+        @queueToWaitingRoom="queueToWaitingRoom"
         />
     <WelcomeReveal
       v-if="!state.joined"

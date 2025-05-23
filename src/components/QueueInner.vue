@@ -3,7 +3,7 @@ import { onMounted, reactive } from 'vue'
 import Entry from './Entry.vue'
 
 const props = defineProps(['queue', 'waiting_room', 'admin', 'waiting_room_policy']);
-const emits = defineEmits(['skip', 'skipCurrent', 'moveUp', 'waitingRoomToQueue', 'moveTo'])
+const emits = defineEmits(['skip', 'skipCurrent', 'moveUp', 'waitingRoomToQueue', 'queueToWaitingRoom', 'moveTo'])
 
 let currentTime = reactive({time: Date.now()})
 
@@ -44,6 +44,7 @@ function offset(index) {
             @skipCurrent="$emit('skipCurrent')"
             @moveUp="(uuid) => $emit('moveUp', uuid)" 
             @moveTo="(data) => $emit('moveTo', data)"
+            @queueToWaitingRoom="(uuid) => $emit('queueToWaitingRoom', uuid)"
           />
           </ul>
           <div v-show="waiting_room_policy" class="header">Waiting room</div>

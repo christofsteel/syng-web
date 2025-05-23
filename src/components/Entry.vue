@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 const props = defineProps(['admin', 'entry', 'current', 'firstStartedAt', 'offset', 'currentTime', 'waitingRoom'])
-const emits = defineEmits(['skip', 'skipCurrent', 'moveUp', 'waitingRoomToQueue', 'moveTo'])
+const emits = defineEmits(['skip', 'skipCurrent', 'moveUp', 'waitingRoomToQueue', 'queueToWaitingRoom', 'moveTo'])
 
 function skip() {
   if(props.current) {
@@ -87,6 +87,12 @@ const dragleave = (e) => {
           <div v-if="admin" class="cell small-3">
                   <button v-if="!waitingRoom" class="button alert fright" @click="skip">
                   <font-awesome-icon icon="fa-solid fa-times" />
+                  </button>
+                  <button 
+                    class="button success fright" 
+                    v-if="!waitingRoom && !current" 
+                    @click="$emit('queueToWaitingRoom', entry.uuid)" >
+                  <font-awesome-icon icon="fa-solid fa-arrows-down-to-line" />
                   </button>
                   <button 
                     class="button success fright" 
