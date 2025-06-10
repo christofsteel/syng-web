@@ -277,10 +277,7 @@ function joinRoom() {
                 "Please use the correct room code your organizer provided you.<br/>" + 
                 "To host your own syng powered karaoke events, please download and " + 
                 "install <a href='https://github.com/christofsteel/syng' target='_blank'>Syng</a>"
-        if(state.value.joined) {
-            state.socket.disconnect()
-            setTimeout(() => connect(), 2000)
-        }
+      state.socket.disconnect()
     }
   })
 }
