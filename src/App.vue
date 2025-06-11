@@ -189,7 +189,11 @@ function skip(uuid) {
 }
 
 function registerSocketEvents() {
-    state.socket = io(state.value.server)
+    state.socket = io(state.value.server, 
+        {
+            "reconnectionAttempts": 3,
+        }
+    )
     state.socket.on("search-results", (results) => {
       state.value.searching = false
       state.value.search.searchResults = results.results
@@ -198,6 +202,10 @@ function registerSocketEvents() {
     state.socket.on("connect", () => { joinRoom() })
 
     state.socket.io.on("reconnect", () => { joinRoom() })
+    state.socket.io.on("reconnect_error", () => {
+        state.value.joined = false;
+    })
+
 
     state.socket.on("state", (val) => {
       state.value.queue=val.queue
