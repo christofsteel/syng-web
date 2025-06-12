@@ -191,7 +191,11 @@ function skip(uuid) {
 function registerSocketEvents() {
     state.socket = io(state.value.server, 
         {
-            "reconnectionAttempts": 3,
+            auth: {
+                type: "web",
+                room: state.value.room,
+                secret: state.value.secret,
+            }
         }
     )
     state.socket.on("search-results", (results) => {
@@ -199,13 +203,30 @@ function registerSocketEvents() {
       state.value.search.searchResults = results.results
     })
 
+    state.socket.on("disconnect", (reason) => {
+        console.warn("Disconnected from server")        
+        state.value.joined = false
+        state.value.join_msg = "Disconnected from server, please check your connection and try again."
+    })
     state.socket.on("connect", () => { joinRoom() })
+    state.socket.on("connect_error", (err) => {
+        console.warn("Connection error:", err.message);
+        state.value.joined = false;        
+        state.value.join_msg = "<strong>No such room!</strong> <br/>" + 
+            "Please use the correct room code your organizer provided you.<br/>" + 
+            "To host your own syng powered karaoke events, please download and " + 
+            "install <a href='https://github.com/christofsteel/syng' target='_blank'>Syng</a>"
+    })
 
     state.socket.io.on("reconnect", () => { joinRoom() })
     state.socket.io.on("reconnect_error", () => {
         state.value.joined = false;
     })
 
+    state.socket.on("admin", (is_admin) => {
+        console.log("Admin status: " + is_admin)
+        state.value.admin = is_admin
+        })
 
     state.socket.on("state", (val) => {
       state.value.queue=val.queue
@@ -266,7 +287,14 @@ function registerSocketEvents() {
 
 function joinRoom() {
     console.log("Joining room " + state.value.room)
-    state.socket.emit("register-web", {"room": state.value.room}, (response) => {
+    localStorage.name = state.value.name
+    localStorage.server = state.value.server
+    localStorage.room = state.value.room
+    localStorage.secret = state.value.secret
+    localStorage.uid = state.value.uid
+    state.value.joined = true
+    router.push({name: "room", params: {room: state.value.room}})
+    /* state.socket.emit("register-web", {"room": state.value.room}, (response) => {
     if(response === true) {
       localStorage.name = state.value.name
       localStorage.server = state.value.server
@@ -287,7 +315,7 @@ function joinRoom() {
                 "install <a href='https://github.com/christofsteel/syng' target='_blank'>Syng</a>"
       state.socket.disconnect()
     }
-  })
+  }) */
 }
 </script>
 
