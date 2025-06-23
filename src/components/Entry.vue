@@ -28,17 +28,42 @@ const eta = computed(() =>{
 })
 
 const dragging = (e) => {
+  if (e.type == 'touchstart') {
+    e.preventDefault()
+    const list_target = e.target.closest('li')
+    list_target.style.opacity = 0.5
+    return 
+  }
+  const element = e.target.closest('li')
  const data = {
    uuid: props.entry.uuid,
-   index: $(e.target.closest('li')).index()}
-   console.log(data)
+   index: $(element).index()    
+  }
  e.dataTransfer.clearData()
  e.dataTransfer.setData('application/json', JSON.stringify(data))
+ e.dataTransfer.setDragImage(element, 0, 0)
  e.dataTransfer.effectAllowed = 'move'
 }
 
 const dragend = (e) => {
   e.preventDefault()
+  if (e.type == 'touchend') {
+    const drop_target = document.getElementById('draggedover')
+    if (drop_target) {
+      drop_target.removeAttribute('id')
+      drop_target.classList.remove('draggedoverTop')
+      drop_target.classList.remove('draggedoverBottom')
+    }
+    e.target.closest('li').style.opacity = 1
+    const drop_index = $(drop_target.closest('li')).index()
+    const source_index = $(e.target.closest('li')).index()    
+    if(source_index < drop_index) {
+      emits('moveTo', {"uuid": props.entry.uuid, "target": drop_index + 1})
+    } else {
+      emits('moveTo', {"uuid": props.entry.uuid, "target": drop_index})
+    }
+    return
+  }
   e.target.closest('li').classList.remove('draggedoverBottom')
   e.target.closest('li').classList.remove('draggedoverTop')
 }
@@ -58,13 +83,28 @@ const dropped = (e) => {
 
 const dragover = (e) => {
   e.preventDefault()
-  e.dataTransfer.dropEffect = 'move'
-  const element = JSON.parse(e.dataTransfer.getData('application/json'))
-  const index = $(e.target.closest('li')).index()
-  if (index < element.index) {
-    e.target.closest('li').classList.add('draggedoverTop')
+  var source_index = 0
+  var target = null
+  if (e.type == 'touchmove') {
+    target = document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY)
+    source_index = $(e.target.closest('li')).index()    
+    const old_draggedover = document.getElementById('draggedover')
+    if (old_draggedover) {
+      old_draggedover.removeAttribute('id')
+      old_draggedover.classList.remove('draggedoverTop')
+      old_draggedover.classList.remove('draggedoverBottom')
+    }
+  } else { 
+    e.dataTransfer.dropEffect = 'move'
+    source_index = JSON.parse(e.dataTransfer.getData('application/json')).index
+    target = e.target
+  }
+  target.closest('li').id = 'draggedover'
+  const index = $(target.closest('li')).index()
+  if (index < source_index) {
+    target.closest('li').classList.add('draggedoverTop')
   } else {
-    e.target.closest('li').classList.add('draggedoverBottom')
+    target.closest('li').classList.add('draggedoverBottom')
   }
 }
 const dragleave = (e) => {
@@ -76,9 +116,16 @@ const dragleave = (e) => {
 </script>
 
 <template>
-  <li :class="[{ current: current }, {waitingRoom: waitingRoom}]" :draggable="admin" @dragstart="dragging" @dragend="dragend" @dragover="dragover" @dragleave="dragleave" @drop="dropped">
+  <li :class="[{ current: current }, {waitingRoom: waitingRoom}]" class="entry" @dragover="dragover" @dragleave="dragleave" @dragend="dragend" @drop="dropped" @touchmove="dragover" @touchend="dragend">
       <div class="grid-x">
           <div class="cell" :class="{'small-9': admin}">
+            <span v-if="admin && !current && !waitingRoom" class="handle" 
+                :draggable="admin" 
+                @dragstart="dragging" 
+                @touchstart="dragging" 
+                >
+             ... ... ... ... ... ... ... ...
+            </span>
             <span class="artist">{{ entry.artist }}</span>
             <span class="title">{{ entry.title }}</span><br />
             <span class="performer">{{ entry.performer }}</span>
@@ -113,6 +160,24 @@ const dragleave = (e) => {
 </template>
 
 <style scoped>
+span.handle {
+  width: 25px;
+  display: inline-block;
+  overflow: hidden;
+  line-height: 5px;
+  cursor: move;
+  vertical-align: middle;
+  margin-top: auto;
+  margin-bottom: auto;
+  font-size: 12px;
+  font-family: sans-serif;
+  letter-spacing: 2px;
+  color: #cccccc;
+height: 100%;
+float: left;
+  touch-action: none;
+  text-shadow: 1px 0 1px black;
+}
 .current {
   background-color: #008000 !important;
 }
@@ -131,11 +196,12 @@ const dragleave = (e) => {
     content: "in ";
 }
 
-.draggedoverTop {
+
+#draggedover.draggedoverTop {
   border-top: 2px solid #008000;
 }
 
-.draggedoverBottom {
+#draggedover.draggedoverBottom {
   border-bottom: 2px solid #008000;
 }
 
