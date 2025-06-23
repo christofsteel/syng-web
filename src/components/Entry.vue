@@ -28,6 +28,9 @@ const eta = computed(() =>{
 })
 
 const dragging = (e) => {
+  if (props.waitingRoom || props.current) {
+    return
+  }
   if (e.type == 'touchstart') {
     e.preventDefault()
     const list_target = e.target.closest('li')
@@ -46,6 +49,9 @@ const dragging = (e) => {
 }
 
 const dragend = (e) => {
+  if (props.waitingRoom || props.current) {
+    return
+  }
   e.preventDefault()
   if (e.type == 'touchend') {
     const drop_target = document.getElementById('draggedover')
@@ -69,6 +75,9 @@ const dragend = (e) => {
 }
 
 const dropped = (e) => {
+  if (props.waitingRoom || props.current) {
+    return
+  }
   e.preventDefault()
   e.target.closest('li').classList.remove('draggedoverBottom')
   e.target.closest('li').classList.remove('draggedoverTop')
@@ -82,11 +91,20 @@ const dropped = (e) => {
 }
 
 const dragover = (e) => {
+  if (props.waitingRoom || props.current) {
+    return
+  }
   e.preventDefault()
   var source_index = 0
   var target = null
   if (e.type == 'touchmove') {
     target = document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY)
+    if (!target) {
+      return
+    }
+    if(target.closest('li') == null || target.closest('li').classList.contains('current') || target.closest('li').classList.contains('waitingRoom')) {
+      return
+    }
     source_index = $(e.target.closest('li')).index()    
     const old_draggedover = document.getElementById('draggedover')
     if (old_draggedover) {
@@ -108,6 +126,9 @@ const dragover = (e) => {
   }
 }
 const dragleave = (e) => {
+  if (props.waitingRoom || props.current) {
+    return
+  }
   e.preventDefault()
   e.target.closest('li').classList.remove('draggedoverTop')
   e.target.closest('li').classList.remove('draggedoverBottom')
