@@ -64,5 +64,16 @@ onBeforeUnmount(() => {
       </div>
     </li>
   </ul>
+    <p class="privacy-link">
+      <a href="https://site.syng.rocks/privacy.html`" target="_blank">Privacy Policy</a>
+      </p>
 </div>
 </template>
+
+<style scoped>
+.privacy-link {
+  font-size: 0.8em;
+  color: #666;
+text-align: right;
+}
+</style>
