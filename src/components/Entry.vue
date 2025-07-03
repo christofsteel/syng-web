@@ -3,6 +3,8 @@ import { computed } from 'vue'
 const props = defineProps(['admin', 'entry', 'current', 'firstStartedAt', 'offset', 'currentTime', 'waitingRoom'])
 const emits = defineEmits(['skip', 'skipCurrent', 'moveUp', 'waitingRoomToQueue', 'queueToWaitingRoom', 'moveTo'])
 
+var in_touch_event = false
+
 function skip() {
   if(props.current) {
      emits("skipCurrent")
@@ -28,11 +30,12 @@ const eta = computed(() =>{
 })
 
 const dragging = (e) => {
-  if (props.waitingRoom || props.current) {
+  if (props.waitingRoom || props.current || !props.admin) {
     return
   }
   if (e.type == 'touchstart') {
     e.preventDefault()
+    in_touch_event = true
     const list_target = e.target.closest('li')
     list_target.style.opacity = 0.5
     return 
@@ -49,11 +52,12 @@ const dragging = (e) => {
 }
 
 const dragend = (e) => {
-  if (props.waitingRoom || props.current) {
+  if (props.waitingRoom || props.current || !props.admin) {
     return
   }
   e.preventDefault()
   if (e.type == 'touchend') {
+    in_touch_event = false
     const drop_target = document.getElementById('draggedover')
     if (drop_target) {
       drop_target.removeAttribute('id')
@@ -75,7 +79,7 @@ const dragend = (e) => {
 }
 
 const dropped = (e) => {
-  if (props.waitingRoom || props.current) {
+  if (props.waitingRoom || props.current || !props.admin) {
     return
   }
   e.preventDefault()
@@ -91,7 +95,7 @@ const dropped = (e) => {
 }
 
 const dragover = (e) => {
-  if (props.waitingRoom || props.current) {
+  if (props.waitingRoom || props.current || !props.admin || !in_touch_event) {
     return
   }
   e.preventDefault()
@@ -126,7 +130,7 @@ const dragover = (e) => {
   }
 }
 const dragleave = (e) => {
-  if (props.waitingRoom || props.current) {
+  if (props.waitingRoom || props.current || !props.admin) {
     return
   }
   e.preventDefault()
