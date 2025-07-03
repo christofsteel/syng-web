@@ -65,7 +65,7 @@ onBeforeUnmount(() => {
     </li>
   </ul>
     <p class="privacy-link">
-      <a href="https://site.syng.rocks/privacy.html`" target="_blank">Privacy Policy</a>
+      <a href="https://site.syng.rocks/privacy.html" target="_blank">Privacy Policy</a>
       </p>
 </div>
 </template>
