@@ -11,6 +11,7 @@ import GetUserName from './components/GetUserName.vue'
 import Footer from './components/Footer.vue'
 import AlreadyQueued from './components/AlreadyQueued.vue'
 import Config from './components/Config.vue'
+import ConfigureAppend from './components/ConfigureAppend.vue'
 
 const router = useRouter()
 
@@ -101,10 +102,14 @@ function queueToWaitingRoom(uuid) {
 
 function append(entry, configure) {
     if(configure) {
-        console.log("Configuring entry before appending not yet implemented")
+        state.value.current_entry = entry;
+        state.value.current_entry.collab_mode = "";
+        state.value.current_entry.performer = state.value.name;
+        $("#configureAppend").foundation("open");
+    } else {
+        entry.uid = state.value.uid;
+        checked_append_with_name(entry, state.value.name) 
     }
-    entry.uid = state.value.uid;
-    checked_append_with_name(entry, state.value.name) 
 }
 function checked_append_with_name(entry, name) {
     if(name == "" || name == null) {
@@ -116,6 +121,14 @@ function checked_append_with_name(entry, name) {
         entry.performer = name;
         raw_append(entry);
     }
+}
+function append_configured() {
+    if(!state.value.current_entry.performer || state.value.current_entry.performer == "") {
+        return;
+    }
+    $("#configureAppend").foundation("close");
+    raw_append(state.value.current_entry);
+    state.value.current_entry = null;
 }
 
 function append_anyway(entry) {
@@ -157,6 +170,11 @@ function close_name() {
 }
 function close_config() {
   $("#config").foundation("close")
+}
+function close_configureAppend() {
+    $("#configureAppend").foundation("close");
+    state.value.current_entry = null;
+    state.value.current_name = null;
 }
 
 function close_already_queued() {
@@ -371,6 +389,13 @@ function joinRoom() {
       @update:currentName="setCurrentName"
       @append="checked_append_with_name(state.current_entry, state.current_name)"
       @close_name="close_name"
+      />
+    <ConfigureAppend
+      :current_name="state.name"
+      :current_entry="state.current_entry"
+      @update:currentName="setCurrentName"
+      @append="append_configured"
+      @cancel="close_configureAppend"                
       />
     <AlreadyQueued
       @append="append_anyway"

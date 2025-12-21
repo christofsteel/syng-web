@@ -155,6 +155,14 @@ const dragleave = (e) => {
             <span class="title">{{ entry.title }}</span><br />
             <span class="performer">{{ entry.performer }}</span>
             <span v-if="!current && !waitingRoom" class="eta">{{ eta }}</span>
+        <span v-if="entry.collab_mode == 'solo'" class="badge">
+          <font-awesome-icon icon="fa-solid fa-person" title="Solo Performance" />
+          Only Me/Us
+        </span>
+        <span v-else-if="entry.collab_mode == 'group'" class="badge">
+          <font-awesome-icon icon="fa-solid fa-people-group" title="Group Performance" />
+          Everyone Can Join
+        </span>
           </div>
           <div v-if="admin" class="cell small-3">
                   <button v-if="!waitingRoom" class="button alert fright" @click="skip">
@@ -185,6 +193,16 @@ const dragleave = (e) => {
 </template>
 
 <style scoped>
+span.badge {
+    background-color: #007b00;
+    color: white;
+    padding: 2px 4px 0px 4px;
+    border-radius: 4px;
+    font-size: 0.75em;
+    margin-left: 8px;
+    vertical-align: middle;
+}
+
 span.handle {
   width: 25px;
   display: inline-block;
