@@ -101,6 +101,7 @@ function queueToWaitingRoom(uuid) {
 }
 
 function append(entry) {
+    entry.uid = state.value.uid;
     checked_append_with_name(entry, state.value.name) 
 }
 function checked_append_with_name(entry, name) {
@@ -110,7 +111,8 @@ function checked_append_with_name(entry, name) {
         $("#getusername").foundation("open");
     } else {
         $("#getusername").foundation("close");
-        raw_append(entry.ident, name, entry.source, entry.title, entry.artist, state.value.uid);
+        entry.performer = name;
+        raw_append(entry);
     }
 }
 
@@ -121,18 +123,18 @@ function append_anyway(entry) {
     state.value.current_name = null;
     state.value.current_entry = null;
     state.value.double_entry = {'artist': null, 'title': null, 'reason': null};
-    state.socket.emit("append-anyway", {"ident": entry.ident, "performer": entry.performer, "source": entry.source, "title": entry.title, "artist": entry.artist, "uid": null });
+    state.socket.emit("append-anyway", entry);
     $("#queue-tab-title").click();
 }
 
-function raw_append(ident, name, source, title, artist, uid) {
+function raw_append(entry) {
     $("#getusername").foundation("close");
     $("#alreadyqueued").foundation("close");
 
     state.value.current_name = null;
     state.value.current_entry = null;
     state.value.double_entry = {'artist': null, 'title': null, 'reason': null};
-    state.socket.emit("append", {"ident": ident, "performer": name, "source": source, "title":title, "artist": artist,"uid": uid });
+    state.socket.emit("append", entry);
     $("#queue-tab-title").click();
 }
 
@@ -140,7 +142,7 @@ function wait_append(entry) {
     $("#getusername").foundation("close");
     $("#alreadyqueued").foundation("close");
 
-    state.socket.emit("waiting-room-append", {"ident": entry.ident, "performer": entry.performer, "source": entry.source, "title": entry.title, "artist": entry.artist, "uid": null });
+    state.socket.emit("waiting-room-append", entry);
     state.value.current_name = null;
     state.value.current_entry = null;
     $("#queue-tab-title").click();
