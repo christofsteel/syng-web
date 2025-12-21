@@ -7,7 +7,6 @@ import $ from 'jquery'
 import MobileLayout from './components/MobileLayout.vue'
 import DesktopLayout from './components/DesktopLayout.vue'
 import WelcomeReveal from './components/WelcomeReveal.vue'
-import GetUserName from './components/GetUserName.vue'
 import Footer from './components/Footer.vue'
 import AlreadyQueued from './components/AlreadyQueued.vue'
 import Config from './components/Config.vue'
@@ -101,27 +100,18 @@ function queueToWaitingRoom(uuid) {
 }
 
 function append(entry, configure) {
-    if(configure) {
+    if(configure || state.value.name == "" || state.value.name == null) {
         state.value.current_entry = entry;
         state.value.current_entry.collab_mode = "";
         state.value.current_entry.performer = state.value.name;
         $("#configureAppend").foundation("open");
     } else {
         entry.uid = state.value.uid;
-        checked_append_with_name(entry, state.value.name) 
+        entry.performer = state.value.name;
+        raw_append(entry)
     }
 }
-function checked_append_with_name(entry, name) {
-    if(name == "" || name == null) {
-        state.value.current_entry = entry;
-        state.value.current_name = "";
-        $("#getusername").foundation("open");
-    } else {
-        $("#getusername").foundation("close");
-        entry.performer = name;
-        raw_append(entry);
-    }
-}
+
 function append_configured() {
     if(!state.value.current_entry.performer || state.value.current_entry.performer == "") {
         return;
@@ -132,7 +122,6 @@ function append_configured() {
 }
 
 function append_anyway(entry) {
-    $("#getusername").foundation("close");
     $("#alreadyqueued").foundation("close");
 
     state.value.current_name = null;
@@ -143,7 +132,6 @@ function append_anyway(entry) {
 }
 
 function raw_append(entry) {
-    $("#getusername").foundation("close");
     $("#alreadyqueued").foundation("close");
 
     state.value.current_name = null;
@@ -154,7 +142,6 @@ function raw_append(entry) {
 }
 
 function wait_append(entry) {
-    $("#getusername").foundation("close");
     $("#alreadyqueued").foundation("close");
 
     state.socket.emit("waiting-room-append", entry);
@@ -163,11 +150,6 @@ function wait_append(entry) {
     $("#queue-tab-title").click();
 }
 
-function close_name() {
-  $("#getusername").foundation("close")
-  state.value.current_entry = null
-  state.value.current_name = null
-}
 function close_config() {
   $("#config").foundation("close")
 }
@@ -382,13 +364,6 @@ function joinRoom() {
       @update:server="setServer"
       @update:secret="setSecret" 
       @update:kiosk="setKiosk"
-      />
-    <GetUserName
-      :current_name="state.current_name"
-      :current_entry="state.current_entry"
-      @update:currentName="setCurrentName"
-      @append="checked_append_with_name(state.current_entry, state.current_name)"
-      @close_name="close_name"
       />
     <ConfigureAppend
       :current_name="state.name"
