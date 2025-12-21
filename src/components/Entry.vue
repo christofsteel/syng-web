@@ -155,17 +155,17 @@ const dragleave = (e) => {
             <span class="title">{{ entry.title }}</span><br />
             <span class="performer">{{ entry.performer }}</span>
             <span v-if="!current && !waitingRoom" class="eta">{{ eta }}</span>
-        <span v-if="entry.collab_mode == 'solo'" class="badge">
+        <span v-if="entry.collab_mode == 'solo'" class="badge solo-badge">
           <font-awesome-icon icon="fa-solid fa-person" title="Solo Performance" />
           Only me/us
         </span>
-        <span v-if="entry.collab_mode == 'solo'" class="badge">
-          <font-awesome-icon icon="fa-solid fa-person" title="Solo Performance" />
-          Looking for Partner
+        <span v-if="entry.collab_mode == 'duet'" class="badge duet-badge">
+          <font-awesome-icon icon="fa-solid fa-person-circle-plus" title="Duet" />
+          Looking for Singer (ask me)
         </span>
-        <span v-else-if="entry.collab_mode == 'group'" class="badge">
+        <span v-else-if="entry.collab_mode == 'group'" class="badge group-badge">
           <font-awesome-icon icon="fa-solid fa-people-group" title="Group Performance" />
-          Everyone can join
+          Everyone can join (just come on stage)
         </span>
           </div>
           <div v-if="admin" class="cell small-3">
@@ -198,13 +198,22 @@ const dragleave = (e) => {
 
 <style scoped>
 span.badge {
-    background-color: #007b00;
     color: white;
     padding: 2px 4px 0px 4px;
     border-radius: 4px;
     font-size: 0.75em;
     margin-left: 8px;
     vertical-align: middle;
+}
+
+.solo-badge {
+    background-color: #a80000;
+}
+.duet-badge {
+    background-color: #ff6600;
+}
+.group-badge {
+    background-color: #007b00;
 }
 
 span.handle {

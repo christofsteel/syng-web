@@ -6,7 +6,7 @@ import App from './App.vue'
 import Main from './Main.vue'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faMagnifyingGlass, faList, faChair, faShare, faArrowUp, faPerson, faPeopleGroup, faHistory, faPlus, faStepForward, faTimes, faArrowsUpToLine, faArrowsDownToLine } from '@fortawesome/free-solid-svg-icons'
+import { faMagnifyingGlass, faList, faPersonCirclePlus, faChair, faShare, faArrowUp, faPerson, faPeopleGroup, faHistory, faPlus, faStepForward, faTimes, faArrowsUpToLine, faArrowsDownToLine } from '@fortawesome/free-solid-svg-icons'
 import { faYoutube } from '@fortawesome/free-brands-svg-icons'
 
 import 'foundation-sites/dist/css/foundation.min.css'
@@ -25,6 +25,7 @@ library.add(faArrowsDownToLine)
 library.add(faShare)
 library.add(faPerson)
 library.add(faPeopleGroup)
+library.add(faPersonCirclePlus)
 
 window.jQuery = jquery;
 window.$ = jquery;

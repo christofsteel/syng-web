@@ -22,6 +22,7 @@ const emits = defineEmits(["update:currentName", "append", "cancel"])
             <input
               type="text"
               v-model="current_entry.performer"
+              placeholder="Arno Nym"
             >
           </label>
         </div>
@@ -32,8 +33,8 @@ const emits = defineEmits(["update:currentName", "append", "cancel"])
             <select v-model="current_entry.collab_mode">
               <option value="" selected>None</option>
               <option value="solo">Only me/us</option>
-              <option value="duett">Looking for Partner</option>
-              <option value="group">Everyone can join</option>
+              <option value="duet">Looking for Partner (ask me)</option>
+              <option value="group">Everyone can join (just come on stage)</option>
             </select>
           </label>
         </div>
