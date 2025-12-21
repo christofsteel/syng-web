@@ -79,7 +79,7 @@ function setKiosk(kiosk) { state.value.kiosk = kiosk }
 function search() {
   var yt_checker = /^(?:https?:\/\/)?(?:www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/;
   if (state.value.search.searchTerm.match(yt_checker)) {
-    append({"ident": state.value.search.searchTerm, "source": "youtube"})
+    append({"ident": state.value.search.searchTerm, "source": "youtube"}, true)
     state.value.search.searchTerm = ""
   } else {
     state.value.searching = true
@@ -99,7 +99,10 @@ function queueToWaitingRoom(uuid) {
     state.socket.emit("queue-to-waiting-room", {"uuid": uuid})
 }
 
-function append(entry) {
+function append(entry, configure) {
+    if(configure) {
+        console.log("Configuring entry before appending not yet implemented")
+    }
     entry.uid = state.value.uid;
     checked_append_with_name(entry, state.value.name) 
 }

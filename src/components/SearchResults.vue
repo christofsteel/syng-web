@@ -8,7 +8,7 @@ const emits = defineEmits(['append'])
 <div id="search-results" class="results">
   <ul class="vertical menu">
     <li v-if="searching">Searching...</li>
-    <Result v-else v-for="result in searchResults" :result="result" @append="$emit('append', result)" />
+    <Result v-else v-for="result in searchResults" :result="result" @append="$emit('append', result, false)" @configure_and_append="$emit('append', result, true)" />
   </ul>
 </div>
 </template>
