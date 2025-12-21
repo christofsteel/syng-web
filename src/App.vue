@@ -96,7 +96,6 @@ function waitingRoomToQueue(uuid) {
 }
 
 function queueToWaitingRoom(uuid) {
-    console.log(uuid)
     state.socket.emit("queue-to-waiting-room", {"uuid": uuid})
 }
 
@@ -244,9 +243,7 @@ function registerSocketEvents() {
     })
 
     state.socket.on("update_config", (response) => {
-        console.log(response)
         state.value.waiting_room_policy = response["waiting_room_policy"]
-        console.log(state)
     })
 
     state.socket.on("msg", (response) => {        
@@ -261,7 +258,6 @@ function registerSocketEvents() {
     }) 
 
     state.socket.on("err", (response) => {    
-        console.log(response)
         switch(response.type) {
         case "QUEUE_FULL":
             var prefix = "The song queue is full and ends at ";
