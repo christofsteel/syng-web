@@ -157,11 +157,15 @@ const dragleave = (e) => {
             <span v-if="!current && !waitingRoom" class="eta">{{ eta }}</span>
         <span v-if="entry.collab_mode == 'solo'" class="badge">
           <font-awesome-icon icon="fa-solid fa-person" title="Solo Performance" />
-          Only Me/Us
+          Only me/us
+        </span>
+        <span v-if="entry.collab_mode == 'solo'" class="badge">
+          <font-awesome-icon icon="fa-solid fa-person" title="Solo Performance" />
+          Looking for Partner
         </span>
         <span v-else-if="entry.collab_mode == 'group'" class="badge">
           <font-awesome-icon icon="fa-solid fa-people-group" title="Group Performance" />
-          Everyone Can Join
+          Everyone can join
         </span>
           </div>
           <div v-if="admin" class="cell small-3">

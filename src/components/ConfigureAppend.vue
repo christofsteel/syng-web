@@ -32,6 +32,7 @@ const emits = defineEmits(["update:currentName", "append", "cancel"])
             <select v-model="current_entry.collab_mode">
               <option value="" selected>None</option>
               <option value="solo">Only me/us</option>
+              <option value="duett">Looking for Partner</option>
               <option value="group">Everyone can join</option>
             </select>
           </label>
