@@ -7,10 +7,10 @@ import $ from 'jquery'
 import MobileLayout from './components/MobileLayout.vue'
 import DesktopLayout from './components/DesktopLayout.vue'
 import WelcomeReveal from './components/WelcomeReveal.vue'
-import GetUserName from './components/GetUserName.vue'
 import Footer from './components/Footer.vue'
 import AlreadyQueued from './components/AlreadyQueued.vue'
 import Config from './components/Config.vue'
+import ConfigureAppend from './components/ConfigureAppend.vue'
 
 const router = useRouter()
 
@@ -34,6 +34,7 @@ const state = ref({
     'uid': null,
     'double_entry': {'artist': null, 'title': null, 'reason': null},
     'waiting_room_policy': null,
+    'allow_collab_mode': true,
     'config': {},
     'kiosk': false
 })
@@ -79,7 +80,8 @@ function setKiosk(kiosk) { state.value.kiosk = kiosk }
 function search() {
   var yt_checker = /^(?:https?:\/\/)?(?:www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/;
   if (state.value.search.searchTerm.match(yt_checker)) {
-    append({"ident": state.value.search.searchTerm, "source": "youtube"})
+    append({"ident": state.value.search.searchTerm, "source": "youtube"}, true)
+    state.value.search.searchTerm = ""
   } else {
     state.value.searching = true
     state.socket.emit("search", {"query": state.value.search.searchTerm })
@@ -95,63 +97,67 @@ function waitingRoomToQueue(uuid) {
 }
 
 function queueToWaitingRoom(uuid) {
-    console.log(uuid)
     state.socket.emit("queue-to-waiting-room", {"uuid": uuid})
 }
 
-function append(entry) {
-    checked_append_with_name(entry, state.value.name) 
-}
-function checked_append_with_name(entry, name) {
-    if(name == "" || name == null) {
+function append(entry, configure) {
+    if(configure || state.value.name == "" || state.value.name == null) {
         state.value.current_entry = entry;
-        state.value.current_name = "";
-        $("#getusername").foundation("open");
+        state.value.current_entry.collab_mode = "";
+        state.value.current_entry.performer = state.value.name;
+        $("#configureAppend").foundation("open");
     } else {
-        $("#getusername").foundation("close");
-        raw_append(entry.ident, name, entry.source, entry.title, entry.artist, state.value.uid);
+        entry.uid = state.value.uid;
+        entry.performer = state.value.name;
+        raw_append(entry)
     }
 }
 
+function append_configured() {
+    if(!state.value.current_entry.performer || state.value.current_entry.performer == "") {
+        return;
+    }
+    $("#configureAppend").foundation("close");
+    raw_append(state.value.current_entry);
+    state.value.current_entry = null;
+}
+
 function append_anyway(entry) {
-    $("#getusername").foundation("close");
     $("#alreadyqueued").foundation("close");
 
     state.value.current_name = null;
     state.value.current_entry = null;
     state.value.double_entry = {'artist': null, 'title': null, 'reason': null};
-    state.socket.emit("append-anyway", {"ident": entry.ident, "performer": entry.performer, "source": entry.source, "title": entry.title, "artist": entry.artist, "uid": null });
+    state.socket.emit("append-anyway", entry);
     $("#queue-tab-title").click();
 }
 
-function raw_append(ident, name, source, title, artist, uid) {
-    $("#getusername").foundation("close");
+function raw_append(entry) {
     $("#alreadyqueued").foundation("close");
 
     state.value.current_name = null;
     state.value.current_entry = null;
     state.value.double_entry = {'artist': null, 'title': null, 'reason': null};
-    state.socket.emit("append", {"ident": ident, "performer": name, "source": source, "title":title, "artist": artist,"uid": uid });
+    state.socket.emit("append", entry);
     $("#queue-tab-title").click();
 }
 
 function wait_append(entry) {
-    $("#getusername").foundation("close");
     $("#alreadyqueued").foundation("close");
 
-    state.socket.emit("waiting-room-append", {"ident": entry.ident, "performer": entry.performer, "source": entry.source, "title": entry.title, "artist": entry.artist, "uid": null });
+    state.socket.emit("waiting-room-append", entry);
     state.value.current_name = null;
     state.value.current_entry = null;
     $("#queue-tab-title").click();
 }
 
-function close_name() {
-  $("#getusername").foundation("close")
-  state.value.current_entry = null
-  state.value.current_name = null
-}
 function close_config() {
   $("#config").foundation("close")
+}
+function close_configureAppend() {
+    $("#configureAppend").foundation("close");
+    state.value.current_entry = null;
+    state.value.current_name = null;
 }
 
 function close_already_queued() {
@@ -233,6 +239,7 @@ function registerSocketEvents() {
       state.value.recent=val.recent
       state.value.waiting_room = val.waiting_room
       state.value.waiting_room_policy = val.config.waiting_room_policy
+      state.value.allow_collab_mode = val.config.allow_collab_mode
     })
 
     state.socket.on("config", (response) => {
@@ -241,9 +248,8 @@ function registerSocketEvents() {
     })
 
     state.socket.on("update_config", (response) => {
-        console.log(response)
         state.value.waiting_room_policy = response["waiting_room_policy"]
-        console.log(state)
+        state.value.allow_collab_mode = response["allow_collab_mode"]
     })
 
     state.socket.on("msg", (response) => {        
@@ -258,7 +264,6 @@ function registerSocketEvents() {
     }) 
 
     state.socket.on("err", (response) => {    
-        console.log(response)
         switch(response.type) {
         case "QUEUE_FULL":
             var prefix = "The song queue is full and ends at ";
@@ -363,12 +368,11 @@ function joinRoom() {
       @update:secret="setSecret" 
       @update:kiosk="setKiosk"
       />
-    <GetUserName
-      :current_name="state.current_name"
+    <ConfigureAppend
       :current_entry="state.current_entry"
-      @update:currentName="setCurrentName"
-      @append="checked_append_with_name(state.current_entry, state.current_name)"
-      @close_name="close_name"
+      :allow_collab_mode="state.allow_collab_mode"
+      @append="append_configured"
+      @cancel="close_configureAppend"                
       />
     <AlreadyQueued
       @append="append_anyway"

@@ -18,7 +18,7 @@ const emit = defineEmits(['update:searchTerm', 'search', 'append', 'skip', 'skip
             <TabHeader link="#recent-list" icon="fa-history" />
         </div>
         <div class="tabs-container" data-tabs-content="main-tab">
-          <SearchTab :search="state.search" :searching="state.searching" @update:searchTerm="(val) => $emit('update:searchTerm', val)" @search="$emit('search')" @append="(entry) => $emit('append', entry)"/>
+          <SearchTab :search="state.search" :searching="state.searching" @update:searchTerm="(val) => $emit('update:searchTerm', val)" @search="$emit('search')" @append="(entry, configure) => $emit('append', entry, configure)"/>
           <QueueTab
             :queue="state.queue"
             :admin="state.admin"
