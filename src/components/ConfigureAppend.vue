@@ -1,6 +1,6 @@
 <script setup>
-const props = defineProps(["current_name","current_entry"])
-const emits = defineEmits(["update:currentName", "append", "cancel"])
+const props = defineProps(["current_entry", "allow_collab_mode"])
+const emits = defineEmits(["append", "cancel"])
 </script>
 
 <template>
@@ -27,7 +27,7 @@ const emits = defineEmits(["update:currentName", "append", "cancel"])
           </label>
         </div>
       </div>
-      <div class="gird-x grid-padding-x">
+      <div class="gird-x grid-padding-x" v-if="allow_collab_mode">
         <div class="medium-6 cell">
           <label>Collaboration Mode:
             <select v-model="current_entry.collab_mode">

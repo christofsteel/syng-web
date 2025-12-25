@@ -34,6 +34,7 @@ const state = ref({
     'uid': null,
     'double_entry': {'artist': null, 'title': null, 'reason': null},
     'waiting_room_policy': null,
+    'allow_collab_mode': true,
     'config': {},
     'kiosk': false
 })
@@ -238,6 +239,7 @@ function registerSocketEvents() {
       state.value.recent=val.recent
       state.value.waiting_room = val.waiting_room
       state.value.waiting_room_policy = val.config.waiting_room_policy
+      state.value.allow_collab_mode = val.config.allow_collab_mode
     })
 
     state.socket.on("config", (response) => {
@@ -247,6 +249,7 @@ function registerSocketEvents() {
 
     state.socket.on("update_config", (response) => {
         state.value.waiting_room_policy = response["waiting_room_policy"]
+        state.value.allow_collab_mode = response["allow_collab_mode"]
     })
 
     state.socket.on("msg", (response) => {        
@@ -366,9 +369,8 @@ function joinRoom() {
       @update:kiosk="setKiosk"
       />
     <ConfigureAppend
-      :current_name="state.name"
       :current_entry="state.current_entry"
-      @update:currentName="setCurrentName"
+      :allow_collab_mode="state.allow_collab_mode"
       @append="append_configured"
       @cancel="close_configureAppend"                
       />
