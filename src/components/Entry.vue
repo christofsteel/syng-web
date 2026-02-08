@@ -4,6 +4,9 @@ const props = defineProps(['admin', 'entry', 'current', 'firstStartedAt', 'offse
 const emits = defineEmits(['skip', 'skipCurrent', 'moveUp', 'waitingRoomToQueue', 'queueToWaitingRoom', 'moveTo'])
 
 var in_touch_event = false
+const is_touch_device = (('ontouchstart' in window) ||
+     (navigator.maxTouchPoints > 0) ||
+     (navigator.msMaxTouchPoints > 0));
 
 function skip() {
   if(props.current) {
@@ -95,7 +98,7 @@ const dropped = (e) => {
 }
 
 const dragover = (e) => {
-  if (props.waitingRoom || props.current || !props.admin || !in_touch_event) {
+  if (props.waitingRoom || props.current || !props.admin || (is_touch_device && !in_touch_event)) {
     return
   }
   e.preventDefault()
