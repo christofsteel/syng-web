@@ -9,8 +9,8 @@ const emit = defineEmits(['update:searchTerm', 'search', 'append'])
 <template>
 <div class="tabs-panel is-active" id="simplesearch">
     <div class="vsplit">
-      <SearchBar :searchTerm="search.searchTerm" @update:searchTerm="(val) => $emit('update:searchTerm', val)" @search="$emit('search')" @append="(entry, configure) => $emit('append', entry, configure)" />
-      <SearchResults :searchResults="search.searchResults" :searching="searching" @append="(entry) => $emit('append', entry)" />
+      <SearchBar :searchTerm="search.searchTerm" @update:searchTerm="(val) => $emit('update:searchTerm', val)" @search="$emit('search')" />
+      <SearchResults :searchResults="search.searchResults" :searching="searching" @append="(entry, configure) => $emit('append', entry, configure)" />
     </div>
 </div>
 </template>
