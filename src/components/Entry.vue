@@ -55,7 +55,7 @@ const dragging = (e) => {
 }
 
 const dragend = (e) => {
-  if (props.waitingRoom || props.current || !props.admin) {
+  if (props.waitingRoom || props.current || !props.admin || (!in_touch_event && is_touch_device))  {
     return
   }
   e.preventDefault()
@@ -144,12 +144,13 @@ const dragleave = (e) => {
 </script>
 
 <template>
-  <li :class="[{ current: current }, {waitingRoom: waitingRoom}]" class="entry" @dragover="dragover" @dragleave="dragleave" @dragend="dragend" @drop="dropped" @touchmove="dragover" @touchend="dragend">
+  <li :class="[{ current: current }, {waitingRoom: waitingRoom}]" class="entry" @dragover="dragover" @dragleave="dragleave" @dragend="dragend" @drop="dropped" @touchend="dragend">
       <div class="grid-x">
           <div class="cell" :class="{'small-9': admin}">
             <span v-if="admin && !current && !waitingRoom" class="handle" 
                 :draggable="admin" 
                 @dragstart="dragging" 
+                @touchmove="dragover"
                 @touchstart="dragging" 
                 >
              ... ... ... ... ... ... ... ...
