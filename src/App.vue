@@ -32,8 +32,8 @@ const state = ref({
     'last_msg': "",
     'join_msg': null,
     'uid': null,
-    'double_entry': {'artist': null, 'title': null, 'reason': null},
-    'waiting_room_policy': null,
+    'old_entries': [],
+    'max_songs_per_person': 1,
     'allow_collab_mode': true,
     'config': {},
     'kiosk': false
@@ -122,22 +122,13 @@ function append_configured() {
     state.value.current_entry = null;
 }
 
-function append_anyway(entry) {
-    $("#alreadyqueued").foundation("close");
-
-    state.value.current_name = null;
-    state.value.current_entry = null;
-    state.value.double_entry = {'artist': null, 'title': null, 'reason': null};
-    state.socket.emit("append-anyway", entry);
-    $("#queue-tab-title").click();
-}
 
 function raw_append(entry) {
     $("#alreadyqueued").foundation("close");
 
     state.value.current_name = null;
     state.value.current_entry = null;
-    state.value.double_entry = {'artist': null, 'title': null, 'reason': null};
+    state.value.old_entries = [];
     state.socket.emit("append", entry);
     $("#queue-tab-title").click();
 }
@@ -238,7 +229,7 @@ function registerSocketEvents() {
       state.value.queue=val.queue
       state.value.recent=val.recent
       state.value.waiting_room = val.waiting_room
-      state.value.waiting_room_policy = val.config.waiting_room_policy
+      state.value.max_songs_per_person = val.config.max_songs_per_person
       state.value.allow_collab_mode = val.config.allow_collab_mode
     })
 
@@ -248,7 +239,7 @@ function registerSocketEvents() {
     })
 
     state.socket.on("update_config", (response) => {
-        state.value.waiting_room_policy = response["waiting_room_policy"]
+        state.value.max_songs_per_person = response["max_songs_per_person"]
         state.value.allow_collab_mode = response["allow_collab_mode"]
     })
 
@@ -258,7 +249,7 @@ function registerSocketEvents() {
     })
 
     state.socket.on("ask_for_waitingroom", (response) => {
-        state.value.double_entry = response.old_entry;
+        state.value.old_entries = response.old_entries;
         state.value.current_entry = response.current_entry;
         $("#alreadyqueued").foundation("open");
     }) 
@@ -375,11 +366,9 @@ function joinRoom() {
       @cancel="close_configureAppend"                
       />
     <AlreadyQueued
-      @append="append_anyway"
       @wait="wait_append"
       @cancel="close_already_queued"
-      :waiting_room_policy="state.waiting_room_policy"
-      :double_entry="state.double_entry"
+      :old_entries="state.old_entries"
       :current_entry="state.current_entry"
       />
     <div class="reveal" id="msg" data-reveal>
