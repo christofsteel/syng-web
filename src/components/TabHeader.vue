@@ -1,11 +1,12 @@
 <script>
 export default {
- props: ['active', 'icon', 'link', 'variant']
+ props: ['active', 'icon', 'link', 'variant', 'locked']
 }
 </script>
 <template>
 <div class="tabs-title" :class="{ 'is-active': active }"><a :href="link">
 <font-awesome-icon :icon="[variant, icon]" />
+<font-awesome-icon v-if="locked" icon="fa-solid fa-lock" />
 </a></div>
 </template>
 

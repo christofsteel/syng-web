@@ -1,13 +1,13 @@
 <script setup>
 import QueueInner from './QueueInner.vue'
 
-const props = defineProps(['queue', 'waiting_room', 'admin', 'max_songs_per_person']);
+const props = defineProps(['queue', 'waiting_room', 'admin', 'max_songs_per_person', 'locked']);
 const emits = defineEmits(['skip', 'skipCurrent', 'moveUp', 'waitingRoomToQueue', 'queueToWaitingRoom', 'moveTo'])
 </script>
 
 <template>
   <div class="comp-column">
-    <div class="header">Queue</div>
+    <div class="header">Queue <font-awesome-icon v-if="locked" icon="fa-solid fa-lock" /></div>
     <QueueInner
       :queue="queue"
       :admin="admin"
