@@ -36,7 +36,8 @@ const state = ref({
     'max_songs_per_person': 1,
     'allow_collab_mode': true,
     'config': {},
-    'kiosk': false
+    'kiosk': false,
+    'queue_locked': false
 })
 
 onMounted(() => { 
@@ -91,6 +92,11 @@ function search() {
 function show_config() {
         state.socket.emit("show_config");
         }
+
+function lock_queue() {
+    console.log("Locking queue. Current State:", state.value.queue_locked)
+    state.socket.emit("lock_queue", {"locked": !state.value.queue_locked})
+}
 
 function waitingRoomToQueue(uuid) {
     state.socket.emit("waiting-room-to-queue", {"uuid": uuid})
@@ -231,6 +237,8 @@ function registerSocketEvents() {
       state.value.waiting_room = val.waiting_room
       state.value.max_songs_per_person = val.config.max_songs_per_person
       state.value.allow_collab_mode = val.config.allow_collab_mode
+      state.value.queue_locked = val.locked
+      console.log(val)
     })
 
     state.socket.on("config", (response) => {
@@ -256,6 +264,9 @@ function registerSocketEvents() {
 
     state.socket.on("err", (response) => {    
         switch(response.type) {
+        case "QUEUE_LOCKED":
+            state.value.last_msg = "Queue is currently locked"
+            break;
         case "QUEUE_FULL":
             var prefix = "The song queue is full and ends at ";
             var date = new Date(response.end_time * 1000).toLocaleString();
@@ -382,9 +393,11 @@ function joinRoom() {
     :name="state.name"
     :admin="state.admin"
     :kiosk="state.kiosk"
+    :queue_locked="state.queue_locked"
     @update:name="setName"
     @logout="emptyLocalStorageAndLogout"
     @config="show_config"
+    @lock_queue="lock_queue"
     />
       <Config :config="state.config" @update_config="update_config" @close="close_config"/>
 </div>

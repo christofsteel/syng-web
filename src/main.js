@@ -6,12 +6,13 @@ import App from './App.vue'
 import Main from './Main.vue'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faMagnifyingGlass, faList, faPersonCirclePlus, faChair, faShare, faArrowUp, faPerson, faPeopleGroup, faHistory, faPlus, faStepForward, faTimes, faArrowsUpToLine, faArrowsDownToLine } from '@fortawesome/free-solid-svg-icons'
+import { faLock, faMagnifyingGlass, faList, faPersonCirclePlus, faChair, faShare, faArrowUp, faPerson, faPeopleGroup, faHistory, faPlus, faStepForward, faTimes, faArrowsUpToLine, faArrowsDownToLine } from '@fortawesome/free-solid-svg-icons'
 import { faYoutube } from '@fortawesome/free-brands-svg-icons'
 
 import 'foundation-sites/dist/css/foundation.min.css'
 import './assets/main.css'
 library.add(faMagnifyingGlass)
+library.add(faLock)
 library.add(faList)
 library.add(faPlus)
 library.add(faHistory)

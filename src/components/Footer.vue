@@ -1,6 +1,6 @@
 <script setup>
-const props = defineProps(['name', 'admin', 'kiosk'])
-const emits = defineEmits(['update:name', 'logout', 'config'])
+const props = defineProps(['name', 'admin', 'kiosk', 'queue_locked'])
+const emits = defineEmits(['update:name', 'logout', 'config', 'lock_queue'])
 </script>
 <template>
   <footer v-if="!kiosk">
@@ -14,6 +14,10 @@ const emits = defineEmits(['update:name', 'logout', 'config'])
     </span>
     <div class="button alert fright" @click="$emit('logout')">Log out</div>
     <!-- <div v-if="admin" class="button alert fright" @click="$emit('config')">Config</div> -->
+    <div v-if="admin" class="button alert fright" @click="$emit('lock_queue')">
+      <span v-if="queue_locked">Unlock Queue</span>
+      <span v-if="!queue_locked">Lock Queue</span>
+    </div>
   </footer>
 </template>
 <style scoped>
