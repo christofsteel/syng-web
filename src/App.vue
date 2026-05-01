@@ -418,7 +418,7 @@ function joinRoom() {
     position: relative;
 }
 #main-content {
-    height: calc(100vh - 50px);
+    height: calc(100vh - 40px);
     max-height: 100vh;
     max-width: 100vw;
 }
