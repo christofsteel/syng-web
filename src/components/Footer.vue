@@ -24,20 +24,23 @@ const emits = defineEmits(['update:name', 'logout', 'config', 'lock_queue'])
 footer {
   position: fixed;
   bottom: 0;
-  height: 50px;
-  line-height: 50px;
+  height: 40px;
+  line-height: 40px;
   width: 100%;
   padding-left: 10px;
   background-color: #008000;
   font-weight: bold;
   color: #ffffff;
-  font-size: 1.5rem;
+  font-size: 1.0rem;
   margin: auto;
 }
 
 footer > .button {
-margin-top: 5px;
-margin-right: 5px;
+margin-top: 3px;
+margin-right: 3px;
+  padding-left: 7px;
+  padding-right: 7px;
+  font-size: 0.75rem;
 }
 
 footer > .userName {
