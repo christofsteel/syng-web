@@ -131,6 +131,7 @@ function append_configured() {
 
 function raw_append(entry) {
     $("#alreadyqueued").foundation("close");
+    console.log(entry)
 
     state.value.current_name = null;
     state.value.current_entry = null;
