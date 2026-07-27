@@ -11,7 +11,7 @@ const emits = defineEmits(['append', 'configure_and_append']);
     <span class="album">
           <a class="yt-link" target="_blank" rel="noreferrer noopener" :href="result.ident" v-if="result.source == 'youtube'">
             <font-awesome-icon icon="fa-brands fa-youtube" />
-            {{result.album}}</a>
+            Watch on {{result.album}}</a>
           <span v-else>
             {{result.album}}
           </span>
