@@ -6,7 +6,7 @@ const emits = defineEmits(['append', 'configure_and_append']);
 <li>
 <div class="grid-x">
   <div class="cell small-9">
-    <span class="artist">{{result.artist}}</span>
+        <span class="artist" v-if="result.artist">{{result.artist}}</span>
     <span class="title">{{result.title}}</span><br />
     <span class="album">
           <a class="yt-link" target="_blank" rel="noreferrer noopener" :href="result.ident" v-if="result.source == 'youtube'">
