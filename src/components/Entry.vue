@@ -155,7 +155,7 @@ const dragleave = (e) => {
                 >
              ... ... ... ... ... ... ... ...
             </span>
-            <span class="artist">{{ entry.artist }}</span>
+            <span class="artist" v-if="entry.artist">{{ entry.artist }}</span>
             <span class="title">{{ entry.title }}</span><br />
             <span class="performer">{{ entry.performer }}</span>
             <span v-if="!current && !waitingRoom" class="eta">{{ eta }}</span>
