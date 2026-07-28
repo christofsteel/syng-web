@@ -37,7 +37,8 @@ const state = ref({
     'allow_collab_mode': true,
     'config': {},
     'kiosk': false,
-    'queue_locked': false
+    'queue_locked': false,
+    'playing': false
 })
 
 onMounted(() => { 
@@ -96,6 +97,11 @@ function show_config() {
 function lock_queue() {
     console.log("Locking queue. Current State:", state.value.queue_locked)
     state.socket.emit("lock_queue", {"locked": !state.value.queue_locked})
+}
+
+function play_pause() {
+    console.log("Trigger play/pause. Current State: ", state.value.playing)
+    state.socket.emit("media-control", {"command": state.value.playing? "pause" : "play"})
 }
 
 function waitingRoomToQueue(uuid) {
@@ -239,6 +245,7 @@ function registerSocketEvents() {
       state.value.max_songs_per_person = val.config.max_songs_per_person
       state.value.allow_collab_mode = val.config.allow_collab_mode
       state.value.queue_locked = val.locked
+      state.value.playing = val.playing
       console.log(val)
     })
 
@@ -395,10 +402,12 @@ function joinRoom() {
     :admin="state.admin"
     :kiosk="state.kiosk"
     :queue_locked="state.queue_locked"
+    :playing="state.playing"
     @update:name="setName"
     @logout="emptyLocalStorageAndLogout"
     @config="show_config"
     @lock_queue="lock_queue"
+    @play_pause="play_pause"
     />
       <Config :config="state.config" @update_config="update_config" @close="close_config"/>
 </div>
