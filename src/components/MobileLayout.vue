@@ -24,6 +24,7 @@ const emit = defineEmits(['update:searchTerm', 'search', 'append', 'skip', 'skip
             :admin="state.admin"
             :waiting_room="state.waiting_room"
             :max_songs_per_person="state.max_songs_per_person"
+            :is_small="state.is_small"
             @skip="(uuid) => $emit('skip', uuid)"
             @moveUp="(uuid) => $emit('moveUp', uuid)"
             @moveTo="(data) => $emit('moveTo', data)"

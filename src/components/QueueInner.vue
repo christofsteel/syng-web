@@ -2,7 +2,7 @@
 import { onMounted, reactive } from 'vue'
 import Entry from './Entry.vue'
 
-const props = defineProps(['queue', 'waiting_room', 'admin', 'max_songs_per_person']);
+const props = defineProps(['queue', 'waiting_room', 'admin', 'max_songs_per_person', "is_small"]);
 const emits = defineEmits(['skip', 'skipCurrent', 'moveUp', 'waitingRoomToQueue', 'queueToWaitingRoom', 'moveTo'])
 
 let currentTime = reactive({time: Date.now()})
@@ -40,6 +40,7 @@ function offset(index) {
             :firstStartedAt="queue[0].started_at"
             :currentTime="currentTime.time"
             :offset="offset(index)"
+            :is_small="is_small"
             @skip="(uuid) => $emit('skip', uuid)" 
             @skipCurrent="$emit('skipCurrent')"
             @moveUp="(uuid) => $emit('moveUp', uuid)" 

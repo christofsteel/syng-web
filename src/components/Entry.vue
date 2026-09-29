@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue'
-const props = defineProps(['admin', 'entry', 'current', 'firstStartedAt', 'offset', 'currentTime', 'waitingRoom'])
+const props = defineProps(['admin', 'entry', 'current', 'firstStartedAt', 'offset', 'currentTime', 'waitingRoom', 'is_small'])
 const emits = defineEmits(['skip', 'skipCurrent', 'moveUp', 'waitingRoomToQueue', 'queueToWaitingRoom', 'moveTo'])
 
 var in_touch_event = false
@@ -161,15 +161,15 @@ const dragleave = (e) => {
             <span v-if="!current && !waitingRoom" class="eta">{{ eta }}</span>
         <span v-if="entry.collab_mode == 'solo'" class="badge solo-badge">
           <font-awesome-icon icon="fa-solid fa-person" title="Solo Performance" />
-          Only me/us
+          <span v-if="!is_small">Only me/us</span>
         </span>
         <span v-if="entry.collab_mode == 'duet'" class="badge duet-badge">
           <font-awesome-icon icon="fa-solid fa-person-circle-plus" title="Duet" />
-          Looking for Singer (ask me)
+          <span v-if="!is_small">Looking for Singer (ask me)</span>
         </span>
         <span v-else-if="entry.collab_mode == 'group'" class="badge group-badge">
           <font-awesome-icon icon="fa-solid fa-people-group" title="Group Performance" />
-          Everyone can join (just come on stage)
+          <span v-if="!is_small">Everyone can join (just come on stage)</span>
         </span>
           </div>
           <div v-if="admin" class="cell small-3">

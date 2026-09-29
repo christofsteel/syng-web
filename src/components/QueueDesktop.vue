@@ -1,7 +1,7 @@
 <script setup>
 import QueueInner from './QueueInner.vue'
 
-const props = defineProps(['queue', 'waiting_room', 'admin', 'max_songs_per_person', 'locked']);
+const props = defineProps(['queue', 'waiting_room', 'admin', 'max_songs_per_person', 'locked', 'is_small']);
 const emits = defineEmits(['skip', 'skipCurrent', 'moveUp', 'waitingRoomToQueue', 'queueToWaitingRoom', 'moveTo'])
 </script>
 
@@ -13,6 +13,7 @@ const emits = defineEmits(['skip', 'skipCurrent', 'moveUp', 'waitingRoomToQueue'
       :admin="admin"
       :waiting_room="waiting_room"
       :max_songs_per_person="max_songs_per_person"
+      :is_small="is_small"
       @skip="(uuid) => $emit('skip', uuid)"
       @moveUp="(uuid) => $emit('moveUp', uuid)"
       @moveTo="(data) => $emit('moveTo', data)"
